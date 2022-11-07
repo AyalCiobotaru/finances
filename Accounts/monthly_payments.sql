@@ -1,0 +1,16 @@
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Auto Insurance", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Audible", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Mortage", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "BGE", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Water & Sewage", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Defender Razor", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Peacock", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Ring", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Instacart", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Tower FCU RV Loan", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Costco", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Syd's Phone Bill", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Phone Bill", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Spotify", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Verizon", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Amazon", "Monthly Payments", "Paper");

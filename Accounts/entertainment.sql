@@ -1,0 +1,12 @@
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Camper", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Camping", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Movies/plays", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Concerts/clubs", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Massage", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Electronics", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Activities", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Alcohol/Bars", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Volleyball", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "D&D", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Crafts", "Entertainment", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Wedding", "Entertainment", "Paper");

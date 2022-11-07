@@ -1,0 +1,10 @@
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Clothing", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Gifts", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Home", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Pupper", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Grooming", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Nail Salon", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Furniture", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Apartment Stuff", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Business", "Personal", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Donations", "Personal", "Paper");
