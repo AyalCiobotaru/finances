@@ -1,0 +1,575 @@
+@import '~@angular/material/theming';
+@import '~material-design-icons/iconfont/material-icons.css';
+@include mat-core();
+$mat-udml: (
+    50: #ffebee,
+    100: #ffcdd2,
+    200: #ef9a9a,
+    300: #e57373,
+    400: #ff6358,
+    500: #f44336,
+    600: #e53935,
+    700: #d32f2f,
+    800: #c62828,
+    900: #b71c1c,
+    A100: #ff8a80,
+    A200: #ff5252,
+    A400: #ff1744,
+    A700: #d50000,
+    contrast: (
+        50: $dark-primary-text,
+        100: $dark-primary-text,
+        200: $dark-primary-text,
+        300: $dark-primary-text,
+        400: $dark-primary-text,
+        500: $light-primary-text,
+        600: $light-primary-text,
+        700: $light-primary-text,
+        800: $light-primary-text,
+        900: $light-primary-text,
+        A100: $dark-primary-text,
+        A200: $light-primary-text,
+        A400: $light-primary-text,
+        A700: $light-primary-text,
+    ),
+);
+$custom-primary: mat-palette($mat-udml, 400);
+$custom-secondary: mat-palette($mat-light-blue, 300);
+$custom-accent: mat-palette($mat-light-blue, 300);
+$custom-theme: mat-dark-theme($custom-primary, $custom-accent);
+$primary: #ff6358;
+$secondary: #3e80ed;
+$background: #333;
+$text: #ffffff;
+$small-font: 10px;
+$medium-font: 15px;
+$large-font: 20px;
+$border-color: #666a;
+$border-radius: 2px;
+$accent: #ff6358;
+$info: #3e80ed;
+$success: #5ec232;
+$warning: #fdce3e;
+$error: #d51923;
+$base-text: #f6f6f6;
+$base-bg: #444;
+$filter-bg-color: #000;
+$hovered-text: #ffffff;
+$hovered-bg: #555555;
+$selected-text: #ffffff;
+$selected-bg: #ff6358;
+$series-a: #ff6358;
+$series-b: #ffd246;
+$series-c: #78d237;
+$series-d: #28b4c8;
+$series-e: #2d73f5;
+$series-f: #aa46be;
+@include angular-material-theme($custom-theme);
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif !important;
+    background-color: $background !important;
+    color: $text !important;
+}
+
+.overall-font-small {
+    font-size: $small-font;
+
+    .ag-theme-balham-dark {
+        .ag-row {
+            font-size: $small-font;
+        }
+
+        .ag-header-cell {
+            font-size: $small-font;
+        }
+
+    }
+
+    .mat-select {
+        min-width: 30px;
+    }
+
+    .icon-small {
+        width: 15px;
+        height: 15px;
+    }
+
+    .material-icon-size {
+        font-size: 15px !important;
+    }
+
+    .favorite-circle {
+        padding-top: 4px;
+        height: 15px !important;
+        width: 15px !important;
+    }
+
+    .ag-paging-row-summary-panel {
+        font-size: $small-font;
+    }
+    
+    .ag-paging-page-summary-panel {
+        font-size: $small-font;
+        // Pushes over the paging summary a tiny bit to allow the background loading icon to fit nicely.
+        margin-right: 20px;
+    }
+
+    .layer-icon {
+        height: 16px;
+        margin-top: -2px;
+        width: 16px;
+    }
+    
+    .status {
+        border-radius: 8px;
+        height: 16px;
+        margin-top: 4px;
+        width: 16px;
+    }
+}
+
+.overall-font-medium {
+    font-size: $medium-font;
+
+    .ag-theme-balham-dark {
+        .ag-row {
+            font-size: $medium-font;
+        }
+
+        .ag-header-cell {
+            font-size: $medium-font;
+        }
+    }
+    
+    .mat-select {
+        min-width: 40px;
+    }
+    
+    .icon-small {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .material-icon-size {
+        font-size: 20px !important;
+    }
+    
+    .favorite-circle {
+        padding-top: 2px;
+        height: 20px !important;
+        width: 20px !important;
+    }
+    
+    .ag-paging-row-summary-panel {
+        font-size: $medium-font;
+    }
+    
+    .ag-paging-page-summary-panel {
+        font-size: $medium-font;
+        // Pushes over the paging summary a tiny bit to allow the background loading icon to fit nicely.
+        margin-right: 20px;
+    }
+
+    .layer-icon {
+        height: 20px;
+        width: 20px;
+        margin-top: -2px;
+    }
+    
+    .status {
+        border-radius: 10px;
+        height: 20px;
+        margin-top: 2px;
+        width: 20px;
+    }
+}
+
+.overall-font-large {
+    font-size: $large-font;
+
+    .ag-theme-balham-dark {
+        .ag-row {
+            font-size: $large-font;
+        }
+
+        .ag-header-cell {
+            font-size: $large-font;
+        }
+
+    }
+
+    .mat-select {
+        min-width: 50px;
+    }
+
+    .icon-small {
+      min-width: 0px !important;
+      min-height: 0px !important;
+      width: 24px;
+      height: 24px;
+    }
+
+    .material-icon-size {
+      font-size: 24px !important;
+    }
+
+    .favorite-circle {
+      padding-top: 1px;
+      height: 24px !important;
+      width: 24px !important;
+    }
+
+    .ag-paging-row-summary-panel {
+        font-size: $large-font;
+    }
+    
+    .ag-paging-page-summary-panel {
+        font-size: $large-font;
+        // Pushes over the paging summary a tiny bit to allow the background loading icon to fit nicely.
+        margin-right: 20px;
+    }
+
+    .layer-icon {
+        height: 22px;
+        margin-top: -3px;
+        width: 22px;
+    }
+    
+    .status {
+        border-radius: 11px;
+        height: 22px;
+        margin-top: 0px;
+        width: 22px;
+    }
+}
+
+.overall-font-small .ag-star-inserted {
+    height: 16px;
+    width: 16px;
+}
+
+@mixin mat-tabs-theme($theme) {
+    $primary: map-get($theme, accent);
+    $accent: map-get($theme, accent);
+    $warn: map-get($theme, warn);
+    $background: $secondary;
+    $foreground: $text;
+    $header-border: 3px solid mat-color($accent, divider);
+    .mat-tab-nav-bar,
+    .mat-tab-header {
+        border-bottom: $header-border;
+    }
+    .mat-tab-group-inverted-header {
+        .mat-tab-nav-bar,
+        .mat-tab-header {
+            border-top: $header-border;
+            border-bottom: none;
+        }
+    }
+    .mat-tab-label,
+    .mat-tab-link {
+        color: mat-color($foreground, text);
+        &.mat-tab-disabled {
+            color: mat-color($foreground, disabled-text);
+        }
+    }
+    .mat-tab-header-pagination-chevron {
+        border-color: mat-color($foreground, text);
+    }
+    .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
+        border-color: mat-color($foreground, disabled-text);
+    }
+    // Remove header border when there is a background color
+    .mat-tab-group[class*='mat-background-'] .mat-tab-header,
+    .mat-tab-nav-bar[class*='mat-background-'] {
+        border-bottom: none;
+        border-top: none;
+    }
+    .mat-tab-group,
+    .mat-tab-nav-bar {
+        $theme-colors: (
+            primary: $primary,
+            accent: $accent,
+            warn: $warn,
+        );
+        @each $name, $color in $theme-colors {
+            // Set the foreground color of the tabs
+            &.mat-#{$name} {
+                @include _mat-tab-label-focus($color);
+                @include _mat-ink-bar($color);
+                // Override ink bar when background color is the same
+                &.mat-background-#{$name} {
+                    @include _mat-ink-bar($color, default-contrast);
+                }
+            }
+        }
+        @each $name, $color in $theme-colors {
+            // Set background color of the tabs and override focus color
+            &.mat-background-#{$name} {
+                @include _mat-tab-label-focus($color);
+                @include _mat-tabs-background($color);
+            }
+        }
+    }
+}
+
+.mat-tab-body-wrapper {
+    flex: 1 1 auto;
+}
+
+.mat-tab-header {
+    flex: 0 1 auto;
+    background-color: $secondary;
+}
+
+.mat-tab-label {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.mat-ink-bar {
+    height: 4px !important;
+}
+
+.primary {
+    color: $primary;
+    font-weight: bold;
+}
+
+.secondary {
+    color: $secondary;
+}
+
+.accent {
+    color: $accent;
+}
+
+.primary:hover {
+    color: $text;
+}
+
+.secondary:hover {
+    color: $text;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+    background-color: $primary;
+}
+
+.mat-checkbox-disabled .mat-checkbox-background {
+    background-color: #adadad !important;
+}
+
+.mat-checkbox-disabled .mat-checkbox-label {
+    color: #adadad;
+}
+
+.pre-wrapped {
+    white-space: pre-wrap;
+}
+
+.mat-error {
+    font-weight: bold;
+}
+
+.mat-form-field-label {
+    font-weight: bold !important;
+}
+
+.mat-tooltip {
+    font-size: 12px;
+    left: 0;
+}
+
+/* Absolute Center Spinner */
+.loading-indicator {
+    position: absolute;
+    z-index: 999999;
+    height: 2em;
+    width: 2em;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+/* Transparent Overlay */
+.loading-indicator:before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+/* Progress Bar */
+.background-loading-indicator {
+    position: absolute;
+    top: 148px;
+    width: -webkit-fill-available;
+}
+
+.mat-progress-bar-fill::after {
+    background-color: $secondary;
+}
+
+.mat-progress-bar-buffer {
+    background-color: lighten($secondary, 25%);
+}
+
+.shadow .mat-button {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.owl-dt-container {
+    font-size: 13px !important;
+}
+
+.mat-dialog-container {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+    padding-top: 0px !important;
+    position: relative;
+    height: 100% !important;
+}
+
+.mat-dialog-title {
+    text-align: center;
+    width: 100%;
+    background: #ff6358;
+    padding-left: 24px;
+}
+
+.mat-dialog-content {
+    width: 100%;
+    position: relative;
+    padding-right: 0px !important;
+    padding-left: 48px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+.mat-dialog-content tbody {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#ngForm .mat-form-field {
+    width: 100%;
+    max-height: 80px;
+}
+
+.mat-dialog-content .mat-select {
+    min-height: 24px !important;
+}
+
+.mat-dialog-content .mat-select .mat-select-trigger {
+    min-height: 24px !important;
+}
+
+.mat-dialog-actions {
+    width: 100%;
+    bottom: 0;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.mat-dialog-title {
+    margin-bottom: 5px;
+}
+
+.mat-select-value-text {
+    padding-left: 5px;
+}
+
+.mat-input-element {
+    padding-left: 5px;
+}
+
+.mat-column-title {
+    padding-left: 5px;
+}
+
+.mat-toolbar-row {
+    padding-top: 25px;
+    padding-bottom: 10px;
+}
+
+.snackbar {
+    background-color: #ff6358 !important;
+}
+
+#ngForm .mat-form-field-infix {
+    border-top: none;
+    padding-top: 5px;
+}
+
+.customIcon .k-clear-selected {
+    display: none !important;
+}
+
+.customIcon .k-upload-selected {
+    display: none !important;
+}
+
+.bottom-left-corner {
+    z-index: 100;
+    max-width: 200px !important;
+    position: absolute;
+    left: 18px;
+    bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    white-space: nowrap;
+    font-weight: 400 !important;
+}
+
+.font-selector {
+    width: 200px !important;
+    bottom: 11px !important;
+}
+
+.permission-icon {
+    max-width: 25px;
+}
+
+.mat-drawer {
+    padding-bottom: 65px;
+}
+
+// Styling the chip list within the contributor list component
+.example-chip-list {
+    width: 95%;
+    margin-left: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+mat-option.mat-option {
+    height: unset;
+}
+
+.mat-option-text.mat-option-text {
+    white-space: normal;
+}
+
+.mat-autocomplete-panel {
+    max-height: 200px !important;
+}
+
+// Style selected profile grid cells
+.ag-cell-range-selected {
+    opacity: 0.5;
+    background-color: rgb(0, 176, 255);
+}

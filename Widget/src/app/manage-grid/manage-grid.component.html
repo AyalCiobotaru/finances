@@ -1,0 +1,16 @@
+<div>
+    <button mat-raised-button color="primary" (click)="exportCSV()">Export To CSV</button>
+    <button mat-raised-button color="primary" (click)="importCSV()">Import from CSV</button>
+  </div>
+  <div class="table-container">
+    <ag-grid-angular
+      #agGrid
+      class="ag-theme-alpine-dark"
+      [gridOptions]="gridOptions"
+      (gridReady)="onGridReady($event)"
+      [rowData]="dataSource.data"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [paginationAutoPageSize]="true" >
+    </ag-grid-angular>
+  </div>
