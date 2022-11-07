@@ -1,0 +1,250 @@
+/**
+ * {{#description}}{{.}}{{/description}}{{^description}}{{classname}}{{/description}}
+ */{{#description}}
+@ApiModel(description = "{{{description}}}"){{/description}}
+{{>generatedAnnotation}}{{#discriminator}}{{>typeInfoAnnotation}}{{/discriminator}}{{>xmlAnnotation}}{{>additionalModelTypeAnnotations}}
+public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}}{{^parent}}{{#hateoas}}extends RepresentationModel<{{classname}}> {{/hateoas}}{{/parent}} {{#serializableModel}}implements Serializable{{/serializableModel}} {
+{{#serializableModel}}
+  private static final long serialVersionUID = 1L;
+
+{{/serializableModel}}
+  {{#vars}}
+
+    {{#vendorExtensions.x-staticConst}}
+    public static final {{{constValue}}};
+    {{/vendorExtensions.x-staticConst}}
+    {{#vendorExtensions.x-jpaColOverride}}
+    @Column({{{overrideValue}}})
+    {{/vendorExtensions.x-jpaColOverride}}
+    {{#isDateTime}}
+    @Convert(converter = JodaTimeConverter.class)
+    {{/isDateTime}}
+    {{#vendorExtensions.x-isEncrypted}}
+    @Convert(converter = CryptoConverter.class)
+    {{/vendorExtensions.x-isEncrypted}}
+    {{#vendorExtensions.x-idField}}
+    @Id
+    {{/vendorExtensions.x-idField}}
+    {{#vendorExtensions.x-generatedId}}
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    {{/vendorExtensions.x-generatedId}}
+    {{#vendorExtensions.x-joinTable}}
+    @JoinTable({{{joinValue}}})
+    {{/vendorExtensions.x-joinTable}}
+    {{#vendorExtensions.x-jpaAuditCreatedBy}}
+    @CreatedBy
+    {{/vendorExtensions.x-jpaAuditCreatedBy}}
+    {{#vendorExtensions.x-jpaAuditCreatedDate}}
+    @CreatedDate
+    {{/vendorExtensions.x-jpaAuditCreatedDate}}
+    {{#vendorExtensions.x-jpaAuditLastModifiedBy}}
+    @LastModifiedBy
+    {{/vendorExtensions.x-jpaAuditLastModifiedBy}}
+    {{#vendorExtensions.x-jpaAuditLastModifiedDate}}
+    @LastModifiedDate
+    {{/vendorExtensions.x-jpaAuditLastModifiedDate}}
+    {{#vendorExtensions.x-jpaElemColl}}
+    @ElementCollection
+    {{/vendorExtensions.x-jpaElemColl}}
+    {{#vendorExtensions.x-lazyManyToMany}}
+    @ManyToMany(fetch = FetchType.LAZY{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}})
+    {{/vendorExtensions.x-lazyManyToMany}}
+    {{#vendorExtensions.x-lazyManyToOne}}
+    @ManyToOne(fetch = FetchType.LAZY{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}})
+    {{/vendorExtensions.x-lazyManyToOne}}
+    {{#vendorExtensions.x-lazyOneToMany}}
+    @OneToMany(fetch = FetchType.LAZY{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}}{{#vendorExtensions.x-orphan-removal}}, orphanRemoval = true{{/vendorExtensions.x-orphan-removal}})
+    {{/vendorExtensions.x-lazyOneToMany}}
+    {{#vendorExtensions.x-lazyOneToOne}}
+    @OneToOne(fetch = FetchType.LAZY{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}}{{#vendorExtensions.x-orphan-removal}}, orphanRemoval = true{{/vendorExtensions.x-orphan-removal}})
+    {{/vendorExtensions.x-lazyOneToOne}}
+    {{#vendorExtensions.x-lazyManyToManyMapping}}
+    @ManyToMany(mappedBy="{{{mapValue}}}"{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}})
+    {{/vendorExtensions.x-lazyManyToManyMapping}}
+    {{#vendorExtensions.x-lazyManyToOneMapping}}
+    @ManyToOne(mappedBy="{{{mapValue}}}"{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}})
+    {{/vendorExtensions.x-lazyManyToOneMapping}}
+    {{#vendorExtensions.x-lazyOneToManyMapping}}
+    @OneToMany(mappedBy="{{{mapValue}}}"{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}}{{#vendorExtensions.x-orphan-removal}}, orphanRemoval = true{{/vendorExtensions.x-orphan-removal}})
+    {{/vendorExtensions.x-lazyOneToManyMapping}}
+    {{#vendorExtensions.x-lazyOneToOneMapping}}
+    @OneToOne(mappedBy="{{{mapValue}}}"{{#vendorExtensions.x-cascade-all}}, cascade = CascadeType.ALL{{/vendorExtensions.x-cascade-all}}{{#vendorExtensions.x-orphan-removal}}, orphanRemoval = true{{/vendorExtensions.x-orphan-removal}})
+    {{/vendorExtensions.x-lazyOneToOneMapping}}
+    {{#vendorExtensions.x-jsonIgnoreProperty}}
+    @JsonIgnoreProperties("{{{propertyKey}}}")
+    {{/vendorExtensions.x-jsonIgnoreProperty}}
+
+    {{#isEnum}}
+    {{^isContainer}}
+{{>enumClass}}
+    {{/isContainer}}
+    {{#isContainer}}
+    {{#mostInnerItems}} 
+{{>enumClass}}
+    {{/mostInnerItems}}
+    {{/isContainer}}
+    {{/isEnum}}
+  {{#jackson}}
+  @JsonProperty("{{baseName}}"){{#withXml}}
+  @JacksonXmlProperty({{#isXmlAttribute}}isAttribute = true, {{/isXmlAttribute}}{{#xmlNamespace}}namespace="{{xmlNamespace}}", {{/xmlNamespace}}localName = "{{#xmlName}}{{xmlName}}{{/xmlName}}{{^xmlName}}{{baseName}}{{/xmlName}}"){{/withXml}}
+  {{/jackson}}
+  {{#gson}}
+  @SerializedName("{{baseName}}")
+  {{/gson}}
+  {{#isContainer}}
+  {{#useBeanValidation}}@Valid{{/useBeanValidation}}
+  {{#openApiNullable}}
+  private {{>nullableDataType}} {{name}} = {{#isNullable}}JsonNullable.undefined(){{/isNullable}}{{^isNullable}}{{#required}}{{{defaultValue}}}{{/required}}{{^required}}null{{/required}}{{/isNullable}};
+  {{/openApiNullable}}
+  {{^openApiNullable}}
+  private {{>nullableDataType}} {{name}} = {{#required}}{{{defaultValue}}}{{/required}}{{^required}}null{{/required}};
+  {{/openApiNullable}}
+  {{/isContainer}}
+  {{^isContainer}}
+  {{#isDate}}
+  @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+  {{/isDate}}
+  {{#isDateTime}}
+  @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
+  {{/isDateTime}}
+  {{#openApiNullable}}
+  private {{>nullableDataType}} {{name}}{{#isNullable}} = JsonNullable.undefined(){{/isNullable}}{{^isNullable}}{{#defaultValue}} = {{{.}}}{{/defaultValue}}{{/isNullable}};
+  {{/openApiNullable}}
+  {{^openApiNullable}}
+  private {{>nullableDataType}} {{name}}{{#isNullable}} = null{{/isNullable}}{{^isNullable}}{{#defaultValue}} = {{{.}}}{{/defaultValue}}{{/isNullable}};
+  {{/openApiNullable}}
+  {{/isContainer}}
+
+  {{/vars}}
+  {{#vars}}
+  public {{classname}} {{name}}({{{datatypeWithEnum}}} {{name}}) {
+    {{#openApiNullable}}
+    this.{{name}} = {{#isNullable}}JsonNullable.of({{name}}){{/isNullable}}{{^isNullable}}{{name}}{{/isNullable}};
+    {{/openApiNullable}}
+    {{^openApiNullable}}
+    this.{{name}} = {{name}};
+    {{/openApiNullable}}
+    return this;
+  }
+  {{#isArray}}
+
+  public {{classname}} add{{nameInCamelCase}}Item({{{items.datatypeWithEnum}}} {{name}}Item) {
+    {{#openApiNullable}}
+    {{^required}}
+    if (this.{{name}} == null{{#isNullable}} || !this.{{name}}.isPresent(){{/isNullable}}) {
+      this.{{name}} = {{#isNullable}}JsonNullable.of({{{defaultValue}}}){{/isNullable}}{{^isNullable}}{{{defaultValue}}}{{/isNullable}};
+    }
+    {{/required}}
+    this.{{name}}{{#isNullable}}.get(){{/isNullable}}.add({{name}}Item);
+    {{/openApiNullable}}
+    {{^openApiNullable}}
+    if (this.{{name}} == null) {
+      this.{{name}} = {{{defaultValue}}};
+    }
+    this.{{name}}.add({{name}}Item);
+    {{/openApiNullable}}
+    return this;
+  }
+  {{/isArray}}
+  {{#isMap}}
+
+  public {{classname}} put{{nameInCamelCase}}Item(String key, {{{items.datatypeWithEnum}}} {{name}}Item) {
+    {{^required}}
+    if (this.{{name}} == null) {
+      this.{{name}} = {{{defaultValue}}};
+    }
+    {{/required}}
+    this.{{name}}.put(key, {{name}}Item);
+    return this;
+  }
+  {{/isMap}}
+
+  /**
+  {{#description}}
+   * {{{description}}}
+  {{/description}}
+  {{^description}}
+   * Get {{name}}
+  {{/description}}
+  {{#minimum}}
+   * minimum: {{minimum}}
+  {{/minimum}}
+  {{#maximum}}
+   * maximum: {{maximum}}
+  {{/maximum}}
+   * @return {{name}}
+  */
+ {{#vendorExtensions.x-extra-annotation}}
+  {{{vendorExtensions.x-extra-annotation}}}
+  {{/vendorExtensions.x-extra-annotation}}
+  @ApiModelProperty({{#example}}example = "{{{example}}}", {{/example}}{{#required}}required = {{required}}, {{/required}}{{#isReadOnly}}readOnly = {{{isReadOnly}}}, {{/isReadOnly}}value = "{{{description}}}")
+{{#useBeanValidation}}{{>beanValidation}}{{/useBeanValidation}}  public {{>nullableDataType}} {{getter}}() {
+    return {{name}};
+  }
+
+  public void {{setter}}({{>nullableDataType}} {{name}}) {
+    this.{{name}} = {{name}};
+  }
+
+  {{/vars}}
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }{{#hasVars}}
+    {{classname}} {{classVarName}} = ({{classname}}) o;
+    return {{#vars}}Objects.equals(this.{{name}}, {{classVarName}}.{{name}}){{^-last}} &&
+        {{/-last}}{{/vars}}{{#parent}} &&
+        super.equals(o){{/parent}};{{/hasVars}}{{^hasVars}}
+    return true;{{/hasVars}}
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash({{#vars}}{{name}}{{^-last}}, {{/-last}}{{/vars}}{{#parent}}{{#hasVars}}, {{/hasVars}}super.hashCode(){{/parent}});
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class {{classname}} {\n");
+    {{#parent}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/parent}}
+    {{#vars}}
+    {{^vendorExtensions.x-lazyManyToManyMapping}}
+    {{^vendorExtensions.x-lazyManyToMany}}
+    {{^vendorExtensions.x-lazyManyToOneMapping}}
+    {{^vendorExtensions.x-lazyManyToOne}}
+    {{^vendorExtensions.x-lazyOneToManyMapping}}
+    {{^vendorExtensions.x-lazyOneToMany}}
+    {{^vendorExtensions.x-lazyOneToOneMapping}}
+    {{^vendorExtensions.x-lazyOneToOne}}
+    sb.append("    {{name}}: ").append(toIndentedString({{name}})).append("\n");
+    {{/vendorExtensions.x-lazyOneToOne}}
+    {{/vendorExtensions.x-lazyOneToOneMapping}}
+    {{/vendorExtensions.x-lazyOneToMany}}
+    {{/vendorExtensions.x-lazyOneToManyMapping}}
+    {{/vendorExtensions.x-lazyManyToOne}}
+    {{/vendorExtensions.x-lazyManyToOneMapping}}
+    {{/vendorExtensions.x-lazyManyToMany}}
+    {{/vendorExtensions.x-lazyManyToManyMapping}}
+    {{/vars}}    
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+}

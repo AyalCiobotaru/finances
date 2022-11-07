@@ -1,0 +1,13 @@
+.openapi-generator-ignore
+README.md
+java/ac/myfinances/generated/api/AccountsApi.java
+java/ac/myfinances/generated/api/ApiUtil.java
+java/ac/myfinances/generated/api/ParentCategoryApi.java
+java/ac/myfinances/generated/api/TransactionsApi.java
+java/ac/myfinances/generated/model/Account.java
+java/ac/myfinances/generated/model/CreateAccountBody.java
+java/ac/myfinances/generated/model/CreateTransactionBody.java
+java/ac/myfinances/generated/model/ParentCategory.java
+java/ac/myfinances/generated/model/Transaction.java
+java/ac/myfinances/generated/model/TypeEnum.java
+pom.xml

@@ -1,0 +1,1 @@
+INSERT INTO myServer.account (id, category, name, type) VALUES (UUID(), 7, "Capital One Checking", 3);

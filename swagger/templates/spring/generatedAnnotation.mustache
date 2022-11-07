@@ -1,0 +1,19 @@
+@javax.annotation.Generated(value = "{{generatorClass}}"{{^hideGenerationTimestamp}}, date = "{{generatedDate}}"{{/hideGenerationTimestamp}})
+{{#vendorExtensions.x-hibernateAudited}}
+@Audited
+{{/vendorExtensions.x-hibernateAudited}}
+{{#vendorExtensions.x-jpa}}
+@Entity
+{{/vendorExtensions.x-jpa}}
+{{#vendorExtensions.x-jpaEntityListener}}
+@EntityListeners(AuditingEntityListener.class)
+{{/vendorExtensions.x-jpaEntityListener}}
+{{#vendorExtensions.x-jpaTableDefinition}}
+@Table({{{indexValue}}})
+{{/vendorExtensions.x-jpaTableDefinition}}
+{{#vendorExtensions.x-jpaMappedSuperClass}}
+@MappedSuperclass
+{{/vendorExtensions.x-jpaMappedSuperClass}}
+{{#vendorExtensions.x-jpaInheritance}}
+@Inheritance(strategy = {{{inheritanceType}}})
+{{/vendorExtensions.x-jpaInheritance}}

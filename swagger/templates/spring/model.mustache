@@ -1,0 +1,79 @@
+package {{package}};
+
+import java.util.Objects;
+import javax.persistence.Entity;
+{{#imports}}import {{import}};
+{{/imports}}
+{{#openApiNullable}}
+import org.openapitools.jackson.nullable.JsonNullable;
+{{/openApiNullable}}
+{{#serializableModel}}
+import java.io.Serializable;
+{{/serializableModel}}
+{{#useBeanValidation}}
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.EntityListeners;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.*;
+{{/useBeanValidation}}
+{{#performBeanValidation}}
+import org.hibernate.validator.constraints.*;
+{{/performBeanValidation}}
+{{#jackson}}
+{{#withXml}}
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+{{/withXml}}
+{{/jackson}}
+{{#withXml}}
+import javax.xml.bind.annotation.*;
+{{/withXml}}
+{{^parent}}
+{{#hateoas}}
+import org.springframework.hateoas.RepresentationModel;
+{{/hateoas}}
+{{/parent}}
+
+{{#models}}
+{{#model}}
+
+{{#vendorExtensions.x-hibernateAudited}}
+import org.hibernate.envers.Audited;
+{{/vendorExtensions.x-hibernateAudited}}
+{{#vendorExtensions.x-jpa}}
+import org.hibernate.annotations.GenericGenerator;
+{{/vendorExtensions.x-jpa}}
+{{#vendorExtensions.x-jpaAuditable}}
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+{{/vendorExtensions.x-jpaAuditable}}
+{{#vendorExtensions.x-jpaEntityListener}}
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+{{/vendorExtensions.x-jpaEntityListener}}
+
+{{#isEnum}}
+{{>enumOuterClass}}
+{{/isEnum}}
+{{^isEnum}}
+{{>pojo}}
+{{/isEnum}}
+{{/model}}
+{{/models}}
