@@ -6,6 +6,7 @@
 /out-tsc
 /bazel-out
 **/bin
+**/build
 
 # Node
 /node_modules
@@ -37,7 +38,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-/generated
+**/generated
 .gradle
 .angular
 node_modules
