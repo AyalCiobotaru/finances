@@ -143,7 +143,7 @@ task generateAngularTypescriptApi(type: org.openapitools.generator.gradle.plugin
 
     generatorName = "typescript-angular"
     inputSpec = "$rootDir/swagger/index.yaml".toString()
-    outputDir = "$rootDir/Server/src/generated/ts".toString()
+    outputDir = "$rootDir/Widget/src/generated/ts".toString()
     apiPackage = "api"
     modelPackage = "model"
     validateSpec = false
