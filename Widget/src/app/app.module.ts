@@ -3,6 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { ManageGridComponent } from './manage-grid/manage-grid.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 //
 // Form Controls
@@ -73,6 +75,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
+import { CsvUpdateUploaderComponent } from './csv-update-uploader/csv-update-uploader.component';
 
 
 
@@ -80,10 +83,12 @@ import { AgGridModule } from 'ag-grid-angular';
   declarations: [
     AppComponent,
     ManageGridComponent,
+    CsvUpdateUploaderComponent,
   ],
   imports: [
     AgGridModule,
     BrowserModule,
+    BrowserAnimationsModule,
     MatTabsModule,
     MatInputModule,
     MatTableModule,

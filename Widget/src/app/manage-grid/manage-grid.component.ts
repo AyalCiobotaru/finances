@@ -1,8 +1,11 @@
 import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
-import { HttpClient } from '@angular/common/http';
-import { Transaction, TransactionsService } from 'src/generated/ts';
+import { Account, AccountsService, Transaction, TransactionsService } from 'src/generated/ts';
+import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
+import { CsvUtilService } from '../services/csv-util.service';
+import { ColDef, FirstDataRenderedEvent, ValueFormatterParams } from 'ag-grid-community';
+import { DataManagerService } from '../services/data-manager.service';
 
 @Component({
   selector: 'app-manage-grid',
@@ -19,11 +22,15 @@ export class ManageGridComponent implements OnInit {
   /** The grid Api */
   public gridApi: any
 
-  constructor(public dialog: MatDialog, protected httpClient: HttpClient, private transactionService: TransactionsService) { 
+  public columnDefs: ColDef[] = [];
+
+  constructor(public dialog: MatDialog, private csvUtilService: CsvUtilService, private dataService: DataManagerService) { 
   }
 
   ngOnInit(): void {
-    // this.getTransactions();
+    this.dataService.instantiateAccountData().then(() => {
+      this.setupGrid();
+    })
   }
 
   gridOptions = {
@@ -37,54 +44,53 @@ export class ManageGridComponent implements OnInit {
     // onCellEditingStopped: this.CellEdittingStopped.bind(this) 
   }
 
-  columnDefs = [
-    {
-      headerName: 'Credit',
-      field: 'credit-account-id',
-    },
-    {headerName: 'Date', field: 'date'},
-    {headerName: 'Description', field: 'description'},
-    {headerName: 'Debit', field: 'debit-account-id'},
-    {headerName: 'Amount', field: 'amount'}
-  ];
-
-  public getTransactions() {
-    this.transactionService.getAllTransactions().subscribe((response: Transaction[]) => {
-      this.dataSource.data = response;
-    });
+  public defaultColDef: ColDef = {
+    resizable: true,
+    sortable: true,
+    minWidth: 150
   }
-  // public getUsers() {
-  //   this.userService.getAllUsers().subscribe((cg1vUsers: Cg1vUserPage) => {
-  //     this.userData.data = cg1vUsers.data;
-  //     this.unitService.getAllUnits().subscribe((units: UnitPage) => {
-  //       let unitMap = new Map<String, Unit>();
-  //       let data = [];
-        
-  //       // Go through unit data once to speed things up
-  //       for (const unit of units.data) {
-  //         unitMap.set(unit.departmentId!, unit);
-  //       }
-  //       // create the data to be displayed
-  //       for (let user of this.userData.data) {
-  //         let userUnit : Cg1vUserUnit = {};
-  //         let unit = unitMap.get(user.departmentId!);
-  //         Object.assign(userUnit, user);
 
-  //         userUnit.departmentName = unit?.departmentName;
-  //         userUnit.departmentType = unit?.departmentType;
-  //         userUnit.district = unit?.district;
-  //         userUnit.area = unit?.area;
-  //         userUnit.atuId = unit?.atu;
+  private setupGrid() {
 
-  //         data.push(userUnit);
-  //       }
+    let colDefs: ColDef[] = [
+      {
+        headerName: 'Credit',
+        field: 'credit-account-id',
+      
+        cellRenderer: this.getAccountName,
+        cellRendererParams: {
+          accounts: this.dataService.getAccounts()
+        }
+      },
+      {
+        headerName: 'Date',
+        field: 'date'
+      },
+      {
+        headerName: 'Description',
+        field: 'description'
+      },
+      {
+        headerName: 'Debit',
+        field: 'debit-account-id',
+        cellRenderer: this.getAccountName,
+        cellRendererParams: {
+          accounts: this.dataService.getAccounts()
+        }
+      },
+      {
+        headerName: 'Amount',
+        field: 'amount',
+        valueFormatter: params => "$  " + params.value.toFixed(2)
+      }
+    ];
 
-  //       this.dataSource.data = data;
-  //       this.gridApi.hideOverlay();
-  //     })
-  //   })
-  // }
+    this.columnDefs = colDefs;
+  }
 
+  private getAccountName(params: any) {
+    return params.accounts.find((account: Account) => account.id === params.value).name
+  }
 
   // public CellEdittingStopped(params: any) {
   //   if (this.isAdmin) {
@@ -94,10 +100,17 @@ export class ManageGridComponent implements OnInit {
   //   }
   // }
 
+  onFirstDataRendered(params: FirstDataRenderedEvent) {
+    params.api.sizeColumnsToFit();
+  }
+
   onGridReady(params : any) {
     this.gridApi = params.api;
     this.gridApi.showLoadingOverlay();
-    this.getTransactions();
+    this.dataService.instantiateTransactionData().then(() => {
+      this.gridApi.hideOverlay();
+      this.dataSource.data = this.dataService.getTransactions();
+    });
 
   }
 
@@ -106,93 +119,38 @@ export class ManageGridComponent implements OnInit {
   }
 
   public importCSV() {
-    // const dialogRef = this.dialog.open(CsvUpdateUploaderComponent, {
-    //   height: '396px',
-    //   width: '325px',
-    //   data: {
-    //     dataSource: MatTableDataSource 
-    //   },
-    // });
-    // dialogRef.afterClosed().subscribe(result => {
-    //   // After the dialog closes
+    const dialogRef = this.dialog.open(CsvUpdateUploaderComponent, {
+      height: '396px',
+      width: '325px',
+      data: {
+        dataSource: MatTableDataSource 
+      },
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      // After the dialog closes
 
-    //   // If there was no import,
-    //   if (!result.wb || !result.wb.Sheets) {
-    //       // Return with no changes
-    //       return;
-    //   }
+      // If there was no import,
+      if (!result || !result.wb || !result.wb.Sheets) {
+          // Return with no changes
+          return;
+      }
 
-    //   // Else, start the loading and continue
-    //   this.populateGrid(result.wb);
-    // });
+      // Else, start the loading and continue
+      const promise = this.csvUtilService.populateGrid(result.wb);
+      this.gridApi.showLoadingOverlay();
+
+      // finally, reload the data
+      promise.then((transactions)=> {
+        this.dataService.updateTransactions(transactions).then(() => {
+          this.dataSource.data = this.dataService.getTransactions();
+          this.gridApi.refreshCells();
+          this.gridApi.hideOverlay();
+        })
+      });
+    });
   }
 
-  private populateGrid(workbook : any) {
-    // // our data is in the first sheet
-    // var firstSheetName = workbook.SheetNames[0];
-    // var worksheet = workbook.Sheets[firstSheetName];
-
-    // // we expect the following columns to be present
-    // var columns: any = {
-    //     'A': 'rate',
-    //     'B': 'username',
-    //     'C': 'email',
-    //     'D': 'positionTitle',
-    //     'E': 'firstName',
-    //     'F': 'lastName',
-    //     'G': 'departmentName',
-    //     'H': 'departmentType',
-    //     'I': 'district',
-    //     'J': 'area',
-    //     'K': 'atu',
-    //     'L': 'atuName',
-    //     'M': 'opfac',
-    //     'N': 'departmentId',
-    //     'O': 'id'
-    // };    
-
-    // // start at the 2nd row - the first row are the headers
-    // var rowIndex = 2;
-    // var cg1vUsersRowData : Cg1vUser[] = [];
-
-    // // iterate over the worksheet pulling out the columns we're expecting
-    // // Wrap this in a promise so we can refresh the data once all the users have been updated or added
-    // const promise = new Promise((resolve: any) => {
-    //   while (worksheet['A' + rowIndex]) {
-    //     let row : any = {};
-    //     Object.keys(columns).forEach(function(column: any) {
-    //         let cell = worksheet[column + rowIndex];
-    //         // cell.v is the 'rawValue' of the cell
-    //         // cell.w is the 'formattedText' of the cell which is only availble for some cells
-    //         if (cell) {
-    //           row[columns[column]] = cell.w ? cell.w : cell.v;
-    //         }
-    //     });
-    //     if (row.departmentId.length != 6) {
-    //       row.departmentId = this.padLeft(row.departmentId, '0', 6);
-    //     }
-        
-    //     let cg1vUser : Cg1vUser = {};
-    //     Object.assign(cg1vUser, row);
-
-    //     cg1vUsersRowData.push(cg1vUser);
-
-    //     rowIndex++;
-    //   }
-    //   this.gridApi.showLoadingOverlay();
-    //   this.userService.updateCg1vUser(cg1vUsersRowData).subscribe( () =>{
-    //     resolve();
-    //   });
-    // });
-
-    // // finally, reload the data
-    // promise.then(()=> {
-    //   this.getUsers();
-    //   this.gridApi.refreshCells();
-    //   this.gridApi.hideOverlay();
-    // });
   
-  }
   private padLeft(text:string, padChar:string, size:number): string {
       return (String(padChar).repeat(size) + text).substr( (size * -1), size) ;
   }

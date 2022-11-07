@@ -6,3 +6,5 @@ source income.sql
 source monthly_payments.sql
 source personal.sql
 source transportation.sql
+
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Prev. Year Transfer", "", "Paper");

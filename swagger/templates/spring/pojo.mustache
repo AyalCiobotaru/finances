@@ -10,6 +10,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}}{{^parent}}
 {{/serializableModel}}
   {{#vars}}
 
+
     {{#vendorExtensions.x-staticConst}}
     public static final {{{constValue}}};
     {{/vendorExtensions.x-staticConst}}
@@ -29,6 +30,9 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}}{{^parent}}
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     {{/vendorExtensions.x-generatedId}}
+    {{#vendorExtensions.x-typeEnum}}
+    @Column(columnDefinition="Enum('Paper', 'Actual')")
+    {{/vendorExtensions.x-typeEnum}}
     {{#vendorExtensions.x-joinTable}}
     @JoinTable({{{joinValue}}})
     {{/vendorExtensions.x-joinTable}}

@@ -40,11 +40,10 @@ paths:
                 type: "array"
                 items:
                   $ref: '#/components/schemas/Account'
-  /accounts/add:
     post:
       tags:
         - "Accounts"
-      summary: "Create an account"
+      summary: "Create an account or multiple accounts"
       operationId: "createAccount"
       requestBody:
         description: "Create Account body"
@@ -52,12 +51,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAccountBody'
+              type: "array"
+              items:
+                $ref: '#/components/schemas/Account'
       responses:
         "200":
           description: "successful operation"
 
-  /accounts/{id}:
+  /accounts/id/{id}:
     get:
       tags:
         - "Accounts"
@@ -67,6 +68,28 @@ paths:
         - name: "id"
           in: "path"
           description: "The id that needs to be fetched. Use 1 for testing. "
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "404":
+          description: "Account not found"
+  /accounts/name/{name}:
+    get:
+      tags:
+        - "Accounts"
+      summary: "Get account by name"
+      operationId: "getAccountByName"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "The name that needs to be fetched."
           required: true
           schema:
             type: "string"
@@ -94,22 +117,29 @@ paths:
                   type: "array"
                   items:
                     $ref: '#/components/schemas/Transaction'
-  /transactions/add:
-    post:
-      tags:
-        - "Transactions"
-      summary: "Create a transaction"
-      operationId: "createTransaction"
-      requestBody:
-        description: "Create Transaction body"
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTransactionBody'
-      responses:
-        "200":
-          description: "successful operation"
+      post:
+        tags:
+          - "Transactions"
+        summary: "Create or Update one or more transaction"
+        operationId: "updateTransactions"
+        requestBody:
+          description: "Transactions to create or update"
+          required: true
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        responses:
+          "200":
+            description: "successful operation"
+            content:
+              application/json:
+                schema:
+                  type: "array"
+                  items:
+                    $ref: '#/components/schemas/Transaction'
   /parentCategory:
     get:
       tags:
@@ -125,7 +155,6 @@ paths:
                 type: "array"
                 items:
                   $ref: '#/components/schemas/ParentCategory'
-  /parentCategory/add:
     post:
       tags:
         - "ParentCategory"
@@ -155,7 +184,8 @@ components:
         name:
           type: "string"
         type:
-          $ref: "#/components/schemas/TypeEnum"
+          type: "string"
+          x-typeEnum: true
         balance:
           type: "number"
           format: "float"
@@ -191,38 +221,6 @@ components:
           x-generatedId: true
         name:
           type: "string"
-    CreateAccountBody:
-      type: "object"
-      properties:
-        name:
-          type: "string"
-        type:
-          $ref: "#/components/schemas/TypeEnum"
-        parentCategory:
-          type: "string"
-        balance:
-          type: "number"
-          format: "float"
-    CreateTransactionBody:
-      type: "object"
-      properties:
-        description:
-          type: "string"
-        credit-account-name:
-          type: "string"
-        debit-account-name:
-          type: "string"
-        amount:
-          type: "number"
-          format: "float"
-        date:
-          type: "string"
-          format: "date"
-    TypeEnum:
-      type: "string"
-      enum:
-        - "Actual"
-        - "Paper"
 
 
 

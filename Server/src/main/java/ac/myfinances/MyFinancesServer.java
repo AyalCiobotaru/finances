@@ -42,19 +42,19 @@ public class MyFinancesServer implements CommandLineRunner{
      * Create a method for the cors Configurer.
      */
     @Bean
-    @ConditionalOnProperty(name = "cg1v.cors.enabled")
+    @ConditionalOnProperty(name = "ac.cors.enabled")
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
-            @Value("${cg1v.cors.api.allowed-origins}")
+            @Value("${ac.cors.api.allowed-origins}")
             private String apiAllowedOrigins;
 
-            @Value("${cg1v.cors.api.allowed-headers}")
+            @Value("${ac.cors.api.allowed-headers}")
             private String apiAllowedHeaders;
 
-            @Value("${cg1v.cors.api.allowed-methods}")
+            @Value("${ac.cors.api.allowed-methods}")
             private String apiAllowedMethods;
 
-            @Value("${cg1v.cors.api.allow-credentials}")
+            @Value("${ac.cors.api.allow-credentials}")
             private Boolean apiAllowCredentials;
 
             @Override

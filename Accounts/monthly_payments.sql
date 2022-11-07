@@ -1,6 +1,6 @@
 INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Auto Insurance", "Monthly Payments", "Paper");
 INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Audible", "Monthly Payments", "Paper");
-INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Mortage", "Monthly Payments", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Mortgage", "Monthly Payments", "Paper");
 INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "BGE", "Monthly Payments", "Paper");
 INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Water & Sewage", "Monthly Payments", "Paper");
 INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Defender Razor", "Monthly Payments", "Paper");
