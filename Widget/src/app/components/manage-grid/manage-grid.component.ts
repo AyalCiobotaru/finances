@@ -3,9 +3,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { Account, AccountsService, Transaction, TransactionsService } from 'src/generated/ts';
 import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
-import { CsvUtilService } from '../services/csv-util.service';
+import { CsvUtilService } from '../../services/csv-util.service';
 import { ColDef, FirstDataRenderedEvent, ValueFormatterParams } from 'ag-grid-community';
-import { DataManagerService } from '../services/data-manager.service';
+import { DataManagerService } from '../../services/data-manager.service';
+import { AccountFormComponent } from '../transaction-form-component/transaction-form.component';
 
 @Component({
   selector: 'app-manage-grid',
@@ -127,16 +128,13 @@ export class ManageGridComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe(result => {
-      // After the dialog closes
-
       // If there was no import,
       if (!result || !result.wb || !result.wb.Sheets) {
-          // Return with no changes
           return;
       }
 
       // Else, start the loading and continue
-      const promise = this.csvUtilService.populateGrid(result.wb);
+      const promise = this.csvUtilService.processWorkbook(result.wb);
       this.gridApi.showLoadingOverlay();
 
       // finally, reload the data
@@ -150,8 +148,8 @@ export class ManageGridComponent implements OnInit {
     });
   }
 
-  
-  private padLeft(text:string, padChar:string, size:number): string {
-      return (String(padChar).repeat(size) + text).substr( (size * -1), size) ;
+  public addTransaction() {
+    const formDialog = this.dialog.open(AccountFormComponent);
+    
   }
 }

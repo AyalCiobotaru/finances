@@ -1,0 +1,38 @@
+<div mat-dialog-container>
+    <h2 mat-dialog-title>Create New Transaction</h2>
+    <mat-dialog-content class="mat-typography">
+      <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+        <mat-form-field >
+          <mat-label>Description</mat-label>
+          <textarea placeholder="Transaction Description" formControlName="description" matInput required></textarea>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>creditAccount</mat-label>
+          <mat-select formControlName="creditAccount" required>
+            <mat-option *ngFor="let account of this.accounts" [value]="account">{{account.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>debitAccount</mat-label>
+          <mat-select formControlName="debitAccount" required>
+            <mat-option *ngFor="let account of this.accounts" [value]="account">{{account.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field >
+          <label for="amount">Amount</label>
+          <input type="number" matInput formControlName="amount">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Date</mat-label>
+          <input placeholder="Date" type="date" matInput formControlName="date" required>
+          <div *ngIf="transactionForm.controls['date'].hasError('required')">
+            <mat-error>Date is required.</mat-error>
+          </div>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button class="save-button" mat-dialog-close [disabled]="this.transactionForm.invalid" (click)="onSubmit()">Save</button>
+      <button mat-button mat-dialog-close>Cancel</button>
+    </mat-dialog-actions>
+  </div>

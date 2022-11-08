@@ -1,0 +1,25 @@
+<div class="userServiceImportDialog" color="secondary">
+    <h1 mat-dialog-title>Import Updates</h1>
+    <div mat-dialog-content>
+      This import will parse the CSV/Excel file. 
+      <br><br>
+  
+      <input
+        class="inputBox"
+        type=file
+        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        (change)=onFileChange($event)>
+  
+  
+    </div>
+    <div mat-dialog-actions>
+      <button mat-raised-button color="primary" (click)="onNoClick()">Cancel</button>
+      <button 
+        color="primary"
+        mat-raised-button
+        [mat-dialog-close]="data"
+        cdkFocusInitial
+        [disabled]="!data"
+        >Import</button>
+    </div>
+  </div>

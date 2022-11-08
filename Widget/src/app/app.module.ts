@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { ManageGridComponent } from './manage-grid/manage-grid.component';
+import { ManageGridComponent } from './components/manage-grid/manage-grid.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // Form Controls
 //
 
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -75,7 +76,8 @@ import { MatTableModule } from '@angular/material/table';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
-import { CsvUpdateUploaderComponent } from './csv-update-uploader/csv-update-uploader.component';
+import { CsvUpdateUploaderComponent } from './components/csv-update-uploader/csv-update-uploader.component';
+import { AccountFormComponent } from './components/transaction-form-component/transaction-form.component';
 
 
 
@@ -84,6 +86,7 @@ import { CsvUpdateUploaderComponent } from './csv-update-uploader/csv-update-upl
     AppComponent,
     ManageGridComponent,
     CsvUpdateUploaderComponent,
+    AccountFormComponent,
   ],
   imports: [
     AgGridModule,
@@ -123,8 +126,8 @@ import { CsvUpdateUploaderComponent } from './csv-update-uploader/csv-update-upl
     MatSnackBarModule,
     MatChipsModule,
     MatAutocompleteModule,
-    HttpClientModule
-
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
