@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/generated/ts';
+import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/app/rest';
 
 @Injectable({
   providedIn: 'root'

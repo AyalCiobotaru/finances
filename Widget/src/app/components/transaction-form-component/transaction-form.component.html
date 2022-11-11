@@ -8,17 +8,17 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Credit Account</mat-label>
-          <mat-select formControlName="creditAccount" required [(value)]="this.selectedCreditAccount">
-            <!-- <mat-option *ngIf="this.data" value="this.selectedCreditAccount">{{this.selectedCreditAccount?.name}}</mat-option> -->
-            <mat-option *ngFor="let account of this.accounts" [value]="account">{{account.name}}</mat-option>
-          </mat-select>
+          <input type="text" matInput formControlName="creditAccount" [matAutocomplete]="creditAuto">
+          <mat-autocomplete #creditAuto="matAutocomplete" autoActiveFirstOption  [displayWith]="displayFn">
+            <mat-option *ngFor="let account of this.creditFilteredAccounts | async" [value]="account">{{account.name}}</mat-option>
+          </mat-autocomplete>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Debit Account</mat-label>
-          <mat-select formControlName="debitAccount" required [(value)]="this.selectedDebitAccount">
-            <!-- <mat-option *ngIf="this.data" value="this.selectedDebitAccount">{{this.selectedDebitAccount?.name}}</mat-option> -->
-            <mat-option *ngFor="let account of this.accounts" [value]="account">{{account.name}}</mat-option>
-          </mat-select>
+          <input type="text" matInput formControlName="debitAccount" [matAutocomplete]="debitAuto">
+            <mat-autocomplete #debitAuto="matAutocomplete" autoActiveFirstOption  [displayWith]="displayFn">
+              <mat-option *ngFor="let account of this.debitFilteredAccounts | async" [value]="account">{{account.name}}</mat-option>
+            </mat-autocomplete>
         </mat-form-field>
         <mat-form-field >
           <label for="amount">Amount</label>

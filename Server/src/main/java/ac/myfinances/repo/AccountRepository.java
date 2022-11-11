@@ -1,6 +1,6 @@
 package ac.myfinances.repo;
 
-import ac.myfinances.generated.model.Account;
+import ac.myfinances.rest.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

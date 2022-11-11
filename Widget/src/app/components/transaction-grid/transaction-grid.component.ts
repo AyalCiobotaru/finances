@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
-import { Transaction,  } from 'src/generated/ts';
+import { Account, Transaction,  } from 'src/app/rest';
 import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
 import { CsvUtilService } from '../../services/csv-util.service';
 import { ColDef, FirstDataRenderedEvent,  } from 'ag-grid-community';
@@ -55,6 +55,7 @@ export class TransactionGridComponent implements OnInit {
   public defaultColDef: ColDef = {
     resizable: true,
     sortable: true,
+    filter: 'agSetColumnFilter',
     minWidth: 150
   }
 
@@ -62,33 +63,36 @@ export class TransactionGridComponent implements OnInit {
 
     let colDefs: ColDef[] = [
       {
-        headerName: 'Credit',
-        field: 'creditAccount',
-        filter: 'set',
+        headerName: 'Debit',
+        field: 'debitAccount',
         cellRenderer: this.getAccountName,
+        filterParams: {
+          accounts: this.dataService.getAccounts(),
+          valueFormatter: this.getAccountNameById
+        }
         
       },
       {
         headerName: 'Date',
         field: 'date',
-        filter: 'date'
       },
       {
         headerName: 'Description',
         field: 'description',
-        filter: true
       },
       {
-        headerName: 'Debit',
-        field: 'debitAccount',
-        filter: 'set',
+        headerName: 'Credit',
+        field: 'creditAccount',
         cellRenderer: this.getAccountName,
+        filterParams: {
+          accounts: this.dataService.getAccounts(),
+          valueFormatter: this.getAccountNameById
+        }
         
       },
       {
         headerName: 'Amount',
         field: 'amount',
-        filter: 'number',
         valueFormatter: params => "$  " + params.value.toFixed(2)
       }
     ];
@@ -98,6 +102,10 @@ export class TransactionGridComponent implements OnInit {
 
   private getAccountName(params: any) {
     return params.value.name;
+  }
+
+  private getAccountNameById(params: any) {
+    return params.colDef.filterParams.accounts.find((account: Account) => account.id === params.value).name;
   }
 
   // public CellEdittingStopped(params: any) {

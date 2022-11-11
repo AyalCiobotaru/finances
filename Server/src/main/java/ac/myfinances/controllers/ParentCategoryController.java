@@ -1,7 +1,7 @@
 package ac.myfinances.controllers;
 
-import ac.myfinances.generated.api.ParentCategoryApi;
-import ac.myfinances.generated.model.ParentCategory;
+import ac.myfinances.rest.api.ParentCategoryApi;
+import ac.myfinances.rest.model.ParentCategory;
 import ac.myfinances.repo.ParentCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

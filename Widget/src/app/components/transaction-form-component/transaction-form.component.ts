@@ -2,8 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataManagerService } from 'src/app/services/data-manager.service';
-import { Account, AccountsService } from 'src/generated/ts';
-import { TransactionDTO } from 'src/generated/ts/model/transactionDTO';
+import { Account, AccountsService } from 'src/app/rest';
+import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
+import { Observable, startWith, map } from 'rxjs';
 
 @Component({
   selector: 'app-transaction-form',
@@ -15,6 +16,10 @@ export class TransactionFormComponent implements OnInit {
   public transactionForm!: FormGroup;
 
   public accounts: Account[] = [];
+  public debitAccounts: Account[] = [];
+
+  public creditFilteredAccounts!: Observable<Account[]>;
+  public debitFilteredAccounts!: Observable<Account[]>;
 
   public selectedCreditAccount: Account | undefined;
   public selectedDebitAccount: Account | undefined;
@@ -22,6 +27,8 @@ export class TransactionFormComponent implements OnInit {
   constructor(private fb: FormBuilder, private accountService: AccountsService, private dataService: DataManagerService, @Inject(MAT_DIALOG_DATA) public data?: any) {
     this.initializeAccountForm();
     this.accounts = this.dataService.getAccounts();
+    this.debitAccounts = JSON.parse(JSON.stringify(this.accounts));
+
     if (this.data) {
       if (this.data.creditAccountId) {
         this.selectedCreditAccount = this.accounts.find(account => account.name?.toLowerCase() === this.data.creditAccountName.toLowerCase())
@@ -33,9 +40,27 @@ export class TransactionFormComponent implements OnInit {
 
       }
     }
+
+    
    }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.creditFilteredAccounts = this.transactionForm.controls['creditAccount'].valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        const name = typeof value === 'string' ? value : value?.name;
+        return name ? this._filter(name as string, this.accounts) : this.accounts.slice();
+      }),
+    );
+
+    this.debitFilteredAccounts = this.transactionForm.controls['debitAccount'].valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        const name = typeof value === 'string' ? value : value?.name;
+        return name ? this._filter(name as string, this.debitAccounts) : this.debitAccounts.slice();
+      }),
+    );
+  }
 
   onSubmit(): void {
     if (this.isValid()) {
@@ -68,10 +93,10 @@ export class TransactionFormComponent implements OnInit {
 
     this.transactionForm = this.fb.group({
       description: new FormControl(this.data ? this.data.description : ""),
-      creditAccount: new FormControl("", [
+      creditAccount: new FormControl<string | Account>("", [
         Validators.required
       ]),
-      debitAccount: new FormControl("", [
+      debitAccount: new FormControl<string | Account>("", [
         Validators.required
       ]),
       amount: new FormControl(this. data ? this.data.amount : 0.0, [
@@ -90,6 +115,16 @@ export class TransactionFormComponent implements OnInit {
     } else {
       return true;
     }
+  }
+
+  public displayFn(account: Account): string {
+    return account && account.name ? account.name : '';
+  }
+
+  private _filter(name: string, accountList: Account[]): Account[] {
+    const filterValue = name.toLowerCase();
+
+    return accountList.filter(option => option.name?.toLowerCase().includes(filterValue));
   }
 
   /**

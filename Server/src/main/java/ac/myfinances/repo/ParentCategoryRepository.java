@@ -1,6 +1,6 @@
 package ac.myfinances.repo;
 
-import ac.myfinances.generated.model.ParentCategory;
+import ac.myfinances.rest.model.ParentCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

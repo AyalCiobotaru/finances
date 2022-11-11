@@ -1,18 +1,14 @@
 package ac.myfinances.controllers;
 
-import ac.myfinances.generated.api.TransactionsApi;
-import ac.myfinances.generated.model.Account;
-import ac.myfinances.generated.model.ParentCategory;
-import ac.myfinances.generated.model.Transaction;
-import ac.myfinances.generated.model.TransactionDTO;
+import ac.myfinances.rest.api.TransactionsApi;
+import ac.myfinances.rest.model.Transaction;
+import ac.myfinances.rest.model.TransactionDTO;
 import ac.myfinances.repo.AccountRepository;
 import ac.myfinances.repo.TransactionRepository;
 import ac.myfinances.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;

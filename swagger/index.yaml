@@ -203,28 +203,14 @@ components:
           type: "string"
         creditAccount:
           $ref: "#/components/schemas/Account"
-          x-joinTable:
-            joinValue:  @OneToOne(cascade = CascadeType.ALL)
-                        @JoinTable(name = "credit_account_transaction",
-                            joinColumns =
-                              { @JoinColumn(name = "transaction_id", referencedColumnName = "id") },
-                            inverseJoinColumns =
-                              { @JoinColumn(name = "account_id", referencedColumnName = "id") })"
         debitAccount:
           $ref: "#/components/schemas/Account"
-          x-joinTable:
-            joinValue:  @OneToOne(cascade = CascadeType.ALL)
-                        @JoinTable(name = "debit_account_transaction",
-                            joinColumns =
-                              { @JoinColumn(name = "transaction_id", referencedColumnName = "id") },
-                            inverseJoinColumns =
-                              { @JoinColumn(name = "account_id", referencedColumnName = "id") })
         amount:
           type: "number"
           format: "float"
         date:
           type: "string"
-          format: "date"
+          format: "date"s
     ParentCategory:
       type: "object"
       x-jpa: true

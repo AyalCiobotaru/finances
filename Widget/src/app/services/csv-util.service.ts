@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Account, AccountsService, Transaction, TransactionsService } from 'src/generated/ts';
-import { TransactionDTO } from 'src/generated/ts/model/transactionDTO';
+import { Account, AccountsService, Transaction, TransactionsService } from 'src/app/rest';
+import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
 import { TransactionFormComponent } from '../components/transaction-form-component/transaction-form.component';
 import { DataManagerService } from './data-manager.service';
 

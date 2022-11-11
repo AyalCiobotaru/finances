@@ -1,21 +1,16 @@
 package ac.myfinances.services;
 
-import ac.myfinances.generated.model.Account;
-import ac.myfinances.generated.model.Transaction;
-import ac.myfinances.generated.model.TransactionDTO;
+import ac.myfinances.rest.model.Account;
+import ac.myfinances.rest.model.Transaction;
+import ac.myfinances.rest.model.TransactionDTO;
 import ac.myfinances.repo.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class TransactionService {
