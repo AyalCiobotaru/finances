@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/generated/ts';
 
 @Injectable({
@@ -10,9 +11,16 @@ export class DataManagerService {
 
   private transactionMap: Map<string, Transaction>;
 
+  private transactionChanges : Subject<void>;
+
   constructor(private transactionService: TransactionsService, private accountService: AccountsService, private parentCategoryService: ParentCategoryService) {
     this.accountMap = new Map<string, Account>();
     this.transactionMap = new Map<string, Transaction>();
+    this.transactionChanges = new Subject<void>();
+  }
+
+  public getTransactionChanges() : Observable<void> {
+    return this.transactionChanges.asObservable();
   }
 
   public instantiateAccountData() {
@@ -56,8 +64,9 @@ export class DataManagerService {
           } else {
             console.log("Invalid transaction, no id", transaction);
           }
-        resolve()
         })
+        this.transactionChanges.next();
+        resolve()
       }, (error: any) => {
         console.log("Failed to update transaction")
         console.log(error);
@@ -66,11 +75,19 @@ export class DataManagerService {
   }
 
   /**
-     * Gets all the accounts.
+     * Gets all the accounts as a list.
      * @returns The accounts in the map.
      */
    public getAccounts(): Account[] {
     return Array.from(this.accountMap.values());
+  }
+
+  /**
+     * Gets all the accounts as a map.
+     * @returns The account  map.
+     */
+  public getAccountMap(): Map<string, Account> {
+    return this.accountMap;
   }
 
   /**

@@ -2,6 +2,7 @@ package {{package}};
 
 import java.util.Objects;
 import javax.persistence.Entity;
+
 {{#imports}}import {{import}};
 {{/imports}}
 {{#openApiNullable}}
@@ -25,6 +26,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
@@ -68,7 +70,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 {{#vendorExtensions.x-jpaEntityListener}}
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 {{/vendorExtensions.x-jpaEntityListener}}
-
 {{#isEnum}}
 {{>enumOuterClass}}
 {{/isEnum}}

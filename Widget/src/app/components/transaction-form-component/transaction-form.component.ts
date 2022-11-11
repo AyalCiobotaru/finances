@@ -1,37 +1,53 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { Account, AccountsService } from 'src/generated/ts';
+import { TransactionDTO } from 'src/generated/ts/model/transactionDTO';
 
 @Component({
   selector: 'app-transaction-form',
   templateUrl: './transaction-form.component.html',
   styleUrls: ['./transaction-form.component.scss']
 })
-export class AccountFormComponent implements OnInit {
+export class TransactionFormComponent implements OnInit {
 
   public transactionForm!: FormGroup;
 
   public accounts: Account[] = [];
 
-  constructor(private fb: FormBuilder, private accountService: AccountsService, private dataService: DataManagerService) {
+  public selectedCreditAccount: Account | undefined;
+  public selectedDebitAccount: Account | undefined;
+
+  constructor(private fb: FormBuilder, private accountService: AccountsService, private dataService: DataManagerService, @Inject(MAT_DIALOG_DATA) public data?: any) {
     this.initializeAccountForm();
-    this.accountService.getAllAccounts().subscribe((response: Account[]) => {
-      this.accounts = response;
-    }, (error: any) => {
-      this.accounts = [];
-      console.log("Failed to get accounts");
-    })
+    this.accounts = this.dataService.getAccounts();
+    if (this.data) {
+      if (this.data.creditAccountId) {
+        this.selectedCreditAccount = this.accounts.find(account => account.name?.toLowerCase() === this.data.creditAccountName.toLowerCase())
+        this.transactionForm.get('creditAccount')?.setValue(this.selectedCreditAccount);
+      }
+      if (this.data.debitAccountId) {
+        this.selectedDebitAccount = this.accounts.find(account => account.name?.toLowerCase() === this.data.debitAccountName.toLowerCase())
+        this.transactionForm.get('debitAccount')?.setValue(this.selectedDebitAccount);
+
+      }
+    }
    }
 
   ngOnInit(): void {}
 
   onSubmit(): void {
     if (this.isValid()) {
-      let transaction = this.transactionForm.value;
+      let transaction : TransactionDTO = this.transactionForm.value;
+      
       // Create proper JavaOffset Datetime objects to use from the FormGroup.
       transaction.date = (new Date(this.transactionForm.value.date).toISOString());
 
+      // Create the id column for the dto
+      transaction.creditAccountId = this.transactionForm.value.creditAccount.id;
+      transaction.debitAccountId = this.transactionForm.value.debitAccount.id
+      
       this.dataService.updateTransactions([transaction]).then(() => {
         console.log("updated transaction");
       }, (error: any) => {
@@ -51,17 +67,17 @@ export class AccountFormComponent implements OnInit {
     tomorrow.setDate(today.getDate() + 1);
 
     this.transactionForm = this.fb.group({
-      description: new FormControl(""),
+      description: new FormControl(this.data ? this.data.description : ""),
       creditAccount: new FormControl("", [
         Validators.required
       ]),
       debitAccount: new FormControl("", [
         Validators.required
       ]),
-      amount: new FormControl(0.0, [
+      amount: new FormControl(this. data ? this.data.amount : 0.0, [
         Validators.required
       ]),
-      date: new FormControl(tomorrow.toISOString().substring(0, 16), [
+      date: new FormControl(this.data ? this.data.date.substring(0, 10) : tomorrow.toISOString().substring(0, 16), [
         Validators.required
       ]),
     })
@@ -89,4 +105,12 @@ export class AccountFormComponent implements OnInit {
     });
   }
 
+  public onKey(value: any) { 
+    this.accounts = this.search(value);
+  }
+
+  private search(value: any) { 
+    let filter = value.toLowerCase();
+    return this.accounts.filter(option => option.name?.toLowerCase().includes(filter));
+  }
 }

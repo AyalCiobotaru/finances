@@ -4,6 +4,7 @@ import ac.myfinances.generated.api.TransactionsApi;
 import ac.myfinances.generated.model.Account;
 import ac.myfinances.generated.model.ParentCategory;
 import ac.myfinances.generated.model.Transaction;
+import ac.myfinances.generated.model.TransactionDTO;
 import ac.myfinances.repo.AccountRepository;
 import ac.myfinances.repo.TransactionRepository;
 import ac.myfinances.services.TransactionService;
@@ -34,7 +35,7 @@ public class TransactionController implements TransactionsApi {
     }
 
     @Override
-    public ResponseEntity<List<Transaction>> updateTransactions(List<Transaction> transactions) {
+    public ResponseEntity<List<Transaction>> updateTransactions(List<TransactionDTO> transactions) {
         if (transactions == null) {
             return ResponseEntity.badRequest().build();
         }

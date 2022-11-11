@@ -7,4 +7,4 @@ source monthly_payments.sql
 source personal.sql
 source transportation.sql
 
-INSERT INTO myServer.account(id, name, parent_category, type) VALUES (UUID(), "Prev. Year Transfer", "", "Paper");
+INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Prev. Year Transfer", "", "Paper", 0.0);

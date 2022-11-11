@@ -2,13 +2,17 @@ package ac.myfinances.services;
 
 import ac.myfinances.generated.model.Account;
 import ac.myfinances.generated.model.Transaction;
+import ac.myfinances.generated.model.TransactionDTO;
 import ac.myfinances.repo.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,36 +23,26 @@ public class TransactionService {
     @Autowired
     private AccountRepository accountRepository;
 
-    private final Map<String, Account> accountsToUpdate = new HashMap<>();
+    @Autowired
+    private ModelMapper modelMapper;
 
-    public Transaction verifyAccountId(Transaction transaction) {
+    private ArrayList<Account> accountsToUpdate = new ArrayList<>();
+
+    public Transaction verifyAccountId(TransactionDTO transactionDTO) {
         this.accountsToUpdate.clear();
 
-        Account creditAccount = this.accountRepository.findByName((transaction.getCreditAccountId()));
-        Account debitAccount = this.accountRepository.findByName((transaction.getDebitAccountId()));
+        // Changing to strict allows the tokenization of the entire variable instead of getting confused on 'account'
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        Transaction transaction = this.modelMapper.map(transactionDTO, Transaction.class);
 
-        // The credit account couldn't be found using the name, it might have been passed in as an id
-        if (creditAccount == null) {
-            if (!this.accountRepository.findById(transaction.getCreditAccountId()).isPresent()) {
-                // if it's still present, error
-                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            transaction.setCreditAccountId(creditAccount.getId());
-        }
+        this.accountRepository.findById(transactionDTO.getCreditAccountId()).ifPresent(account -> {
+            transaction.setCreditAccount(account);
 
-        // The debit account couldn't be found using the name, it might have been passed in as an id
-        if (debitAccount == null) {
-            if (!this.accountRepository.findById(transaction.getDebitAccountId()).isPresent()) {
-                // if it's still present, error
-                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            transaction.setDebitAccountId(debitAccount.getId());
-        }
+        });
+        this.accountRepository.findById(transactionDTO.getDebitAccountId()).ifPresent(account -> {
+            transaction.setDebitAccount(account);
+        });
 
-        this.accountsToUpdate.put(creditAccount.getId(), creditAccount);
-        this.accountsToUpdate.put(creditAccount.getId(), debitAccount);
 
         return transaction;
     }
@@ -58,17 +52,17 @@ public class TransactionService {
         transactions.forEach(transaction -> {
             Float amount = transaction.getAmount();
 
-            Account creditedAccount = this.accountsToUpdate.get(transaction.getCreditAccountId());
+            Account creditedAccount = transaction.getCreditAccount();
             creditedAccount.balance(creditedAccount.getBalance() + amount);
 
-            Account debitedAccount = this.accountsToUpdate.get(transaction.getDebitAccountId());
+            Account debitedAccount = transaction.getDebitAccount();
             debitedAccount.balance(debitedAccount.getBalance() - amount);
 
-            this.accountsToUpdate.put(transaction.getCreditAccountId(), creditedAccount);
-            this.accountsToUpdate.put(transaction.getDebitAccountId(), debitedAccount);
+            this.accountsToUpdate.add(creditedAccount);
+            this.accountsToUpdate.add(debitedAccount);
         });
 
-        this.accountRepository.saveAll(this.accountsToUpdate.values());
+        this.accountRepository.saveAll(this.accountsToUpdate);
         this.accountsToUpdate.clear();
     }
 }

@@ -130,7 +130,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: '#/components/schemas/Transaction'
+                  $ref: '#/components/schemas/TransactionDTO'
         responses:
           "200":
             description: "successful operation"
@@ -201,10 +201,10 @@ components:
           x-generatedId: true
         description:
           type: "string"
-        credit-account-id:
-          type: "string"
-        debit-account-id:
-          type: "string"
+        creditAccount:
+          $ref: "#/components/schemas/Account"
+        debitAccount:
+          $ref: "#/components/schemas/Account"
         amount:
           type: "number"
           format: "float"
@@ -221,6 +221,21 @@ components:
           x-generatedId: true
         name:
           type: "string"
+    TransactionDTO:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+        creditAccountId:
+          type: "string"
+        debitAccountId:
+          type: "string"
+        amount:
+          type: "number"
+          format: "float"
+        date:
+          type: "string"
+          format: "date"
 
 
 

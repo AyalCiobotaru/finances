@@ -1,0 +1,40 @@
+:host {
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+}
+
+#wrapper{
+    // min-height: 100%; 
+    height: 100%; 
+    background: lightgray;
+
+    // box-sizing: border-box;/*new*/
+}
+// #tab-group{
+//     height: 100%;
+// }
+
+#tab-group mat-tab-body {
+    flex-grow: 1;
+}
+
+.parent {
+    position: relative;
+}
+
+app-transaction-grid {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    justify-content:space-evenly;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    justify-content:space-evenly;
+}

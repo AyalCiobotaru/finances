@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { ManageGridComponent } from './components/manage-grid/manage-grid.component';
+import { TransactionGridComponent } from './components/transaction-grid/transaction-grid.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
@@ -77,16 +77,18 @@ import { MatTableModule } from '@angular/material/table';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
 import { CsvUpdateUploaderComponent } from './components/csv-update-uploader/csv-update-uploader.component';
-import { AccountFormComponent } from './components/transaction-form-component/transaction-form.component';
+import { TransactionFormComponent } from './components/transaction-form-component/transaction-form.component';
+import { TabStripComponent } from './components/tab-strip/tab-strip.component';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ManageGridComponent,
+    TransactionGridComponent,
     CsvUpdateUploaderComponent,
-    AccountFormComponent,
+    TransactionFormComponent,
+    TabStripComponent,
   ],
   imports: [
     AgGridModule,

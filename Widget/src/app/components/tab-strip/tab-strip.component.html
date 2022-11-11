@@ -1,0 +1,21 @@
+<div id="wrapper">
+    <mat-tab-group id="tab-group" color="accent" 
+        [selectedIndex]="selected" (selectedTabChange)="onTabChanged($event);" style="height:100%; overflow: auto">
+        <mat-tab>
+            <ng-template mat-tab-label>
+            Summary
+            </ng-template>
+            <div>
+                <p>The Summary will go here</p>
+            </div>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                Transactions
+            </ng-template>
+            <div class="grid-container">
+                <app-transaction-grid #transaction> </app-transaction-grid>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
