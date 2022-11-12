@@ -79,6 +79,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { CsvUpdateUploaderComponent } from './components/csv-update-uploader/csv-update-uploader.component';
 import { TransactionFormComponent } from './components/transaction-form-component/transaction-form.component';
 import { TabStripComponent } from './components/tab-strip/tab-strip.component';
+import { SummaryGridComponent } from './components/summary-grid/summary-grid.component';
 
 
 
@@ -89,6 +90,7 @@ import { TabStripComponent } from './components/tab-strip/tab-strip.component';
     CsvUpdateUploaderComponent,
     TransactionFormComponent,
     TabStripComponent,
+    SummaryGridComponent,
   ],
   imports: [
     AgGridModule,
