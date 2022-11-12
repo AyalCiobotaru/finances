@@ -40,6 +40,9 @@ export class SummaryGridComponent implements OnInit {
 
     let colDefs: ColDef[] = [
       {
+        headerName: 'Account',
+      },
+      {
         headerName: 'January',
       },
       {
@@ -74,6 +77,9 @@ export class SummaryGridComponent implements OnInit {
       },
       {
         headerName: 'December',
+      },
+      {
+        headerName: 'Total',
       },
     ];
 
