@@ -140,7 +140,6 @@ export class TransactionGridComponent implements OnInit {
 
   public importCSV() {
     const dialogRef = this.dialog.open(CsvUpdateUploaderComponent, {
-      height: '396px',
       width: '325px',
       data: {
         dataSource: MatTableDataSource 
@@ -153,7 +152,7 @@ export class TransactionGridComponent implements OnInit {
       }
 
       // Else, start the loading and continue
-      const promise = this.csvUtilService.processWorkbook(result.wb);
+      const promise = this.csvUtilService.processWorkbook(result.wb, result.form.value);
       this.gridApi.showLoadingOverlay();
 
       // finally, reload the data

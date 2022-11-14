@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ColDef } from 'ag-grid-community';
 import { Transaction } from 'src/app/rest';
+import { DataManagerService } from 'src/app/services/data-manager.service';
 
 @Component({
   selector: 'app-summary-grid',
@@ -23,10 +24,12 @@ export class SummaryGridComponent implements OnInit {
        */
       public columnDefs: ColDef[] = [];
           
-  constructor() { }
+  constructor(private dataService: DataManagerService) { }
 
   ngOnInit(): void {
-    this.setupGrid();
+    this.dataService.instantiateAccountData().then(() => {
+      this.setupGrid();
+    })
   }
 
   public defaultColDef: ColDef = {

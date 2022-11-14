@@ -12,7 +12,7 @@ export class CsvUtilService {
 
   constructor(private dataService: DataManagerService, private transactionsService: TransactionsService, private matDialogRef: MatDialog) { }
 
-  public processWorkbook(workbook : any): Promise<any> {
+  public processWorkbook(workbook : any, formValues: any): Promise<any> {
 
     // our data is in the first sheet
     var firstSheetName = workbook.SheetNames[0];
@@ -20,11 +20,11 @@ export class CsvUtilService {
 
     // we expect the following columns to be present
     var columns: any = {
-        'A': 'debitAccountName',
-        'B': 'date',
-        'C': 'description',
-        'D': 'creditAccountName',
-        'E': 'amount'
+        'A': formValues.columnA,
+        'B': formValues.columnB,
+        'C': formValues.columnC,
+        'D': formValues.columnD,
+        'E': formValues.columnE
     };    
 
     // start at the 2nd row - the first row are the headers
