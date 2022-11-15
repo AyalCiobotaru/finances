@@ -65,12 +65,17 @@ export class TransactionGridComponent implements OnInit {
       {
         headerName: 'Debit',
         field: 'debitAccount',
-        cellRenderer: this.getAccountName,
+        valueFormatter: this.getAccountNameById,
+        valueGetter: (params) => {
+          return params.data.debitAccount.id;
+        },
+        valueParser: (params) => {
+          return this.getAccountNameById(params);
+        },
         filterParams: {
           accounts: this.dataService.getAccounts(),
           valueFormatter: this.getAccountNameById
         }
-        
       },
       {
         headerName: 'Date',
@@ -83,12 +88,17 @@ export class TransactionGridComponent implements OnInit {
       {
         headerName: 'Credit',
         field: 'creditAccount',
-        cellRenderer: this.getAccountName,
+        valueFormatter: this.getAccountNameById,
+        valueGetter: (params) => {
+          return params.data.creditAccount.id;
+        },
+        valueParser: (params) => {
+          return this.getAccountNameById(params);
+        },
         filterParams: {
           accounts: this.dataService.getAccounts(),
           valueFormatter: this.getAccountNameById
         }
-        
       },
       {
         headerName: 'Amount',
@@ -100,21 +110,10 @@ export class TransactionGridComponent implements OnInit {
     this.columnDefs = colDefs;
   }
 
-  private getAccountName(params: any) {
-    return params.value.name;
-  }
-
   private getAccountNameById(params: any) {
     return params.colDef.filterParams.accounts.find((account: Account) => account.id === params.value).name;
   }
 
-  // public CellEdittingStopped(params: any) {
-  //   if (this.isAdmin) {
-  //     let cg1vUserList : Cg1vUser[] = [];
-  //     cg1vUserList.push(params.data);
-  //     this.userService.updateCg1vUser(cg1vUserList).subscribe();
-  //   }
-  // }
 
   onFirstDataRendered(params: FirstDataRenderedEvent) {
     // params.api.sizeColumnsToFit();
@@ -127,10 +126,8 @@ export class TransactionGridComponent implements OnInit {
   onGridReady(params : any) {
     this.gridApi = params.api;
     this.gridApi.showLoadingOverlay();
-    this.dataService.instantiateTransactionData().then(() => {
-      this.gridApi.hideOverlay();
-      this.dataSource.data = this.dataService.getTransactions();
-    });
+    this.gridApi.hideOverlay();
+    this.dataSource.data = this.dataService.getTransactions();
 
   }
 

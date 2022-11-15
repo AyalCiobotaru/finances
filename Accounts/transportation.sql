@@ -1,8 +1,8 @@
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Gas","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Public Transportation","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Tolls/EZ-Pass","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Maintenance","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Motorcycle","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Tickets/Fines","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Uber","Transportation", "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_category, type, balance) VALUES (UUID(), "Parking","Transportation", "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Gas",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Public Transportation",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Tolls/EZ-Pass",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Maintenance",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Motorcycle",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Tickets/Fines",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Uber",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Parking",(SELECT id from myServer.parent_category pc where pc.name = "Transportation"), "Paper", 0.0);

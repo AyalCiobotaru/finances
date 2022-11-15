@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as XLSX from 'xlsx';
@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx';
   templateUrl: './csv-update-uploader.component.html',
   styleUrls: ['./csv-update-uploader.component.scss']
 })
-export class CsvUpdateUploaderComponent {
+export class CsvUpdateUploaderComponent{
 
   public importForm!: FormGroup;
 
@@ -57,11 +57,11 @@ export class CsvUpdateUploaderComponent {
     tomorrow.setDate(today.getDate() + 1);
 
     this.importForm = this.fb.group({
-      columnA: new FormControl(""),
-      columnB: new FormControl(""),
-      columnC: new FormControl(""),
-      columnD: new FormControl(""),
-      columnE: new FormControl("")
+      columnA: new FormControl(this.columns[3].value),
+      columnB: new FormControl(this.columns[2].value),
+      columnC: new FormControl(this.columns[4].value),
+      columnD: new FormControl(this.columns[1].value),
+      columnE: new FormControl(this.columns[0].value)
     })
   }
 

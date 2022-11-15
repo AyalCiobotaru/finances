@@ -4,6 +4,7 @@ import { Account, AccountsService, Transaction, TransactionsService } from 'src/
 import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
 import { TransactionFormComponent } from '../components/transaction-form-component/transaction-form.component';
 import { DataManagerService } from './data-manager.service';
+import * as BigNumber from 'bignumber.js'
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,12 @@ export class CsvUtilService {
             // cell.v is the 'rawValue' of the cell
             // cell.w is the 'formattedText' of the cell which is only availble for some cells
             if (cell) {
-              row[columns[column]] = cell.w ? cell.w : cell.v;
+              if (columns[column] === 'amount') {
+                // For the amount, I always want the actual value of the cell.
+              row[columns[column]] = cell.v;
+              } else {
+                row[columns[column]] = cell.w ? cell.w : cell.v;
+              }
             }
         });
         let d: Date = new Date(row.date);

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/app/rest';
 import * as BigNumber from 'bignumber.js';
+import { NodeWithI18n } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,9 @@ export class DataManagerService {
 
   private transactionChanges : Subject<void>;
 
+  /**
+   * List of months Map with account -> amount for given month
+   */
   private summaryList : Map<string, BigNumber.BigNumber>[];
 
   constructor(private transactionService: TransactionsService, private accountService: AccountsService, private parentCategoryService: ParentCategoryService) {
@@ -75,6 +79,7 @@ export class DataManagerService {
           }
         })
         console.log(this.summaryList);
+        this.transactionChanges.next();
         resolve();
       })
     })
@@ -109,18 +114,26 @@ export class DataManagerService {
 
   /**
      * Gets all the accounts as a map.
-     * @returns The account  map.
+     * @returns The account map.
      */
   public getAccountMap(): Map<string, Account> {
     return this.accountMap;
   }
 
   /**
-     * Gets all the accounts.
-     * @returns The accounts in the map.
+     * Gets all the transactions.
+     * @returns The transaction in the map.
      */
    public getTransactions(): Transaction[] {
     return Array.from(this.transactionMap.values());
+  }
+
+  /**
+     * Gets the summary list.
+     * @returns The summary list.
+     */
+   public getSummaryList(): Map<string, BigNumber.BigNumber>[] {
+    return this.summaryList;
   }
    
 }

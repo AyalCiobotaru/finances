@@ -44,20 +44,20 @@ public class AccountController implements AccountsApi {
         if (accounts == null) {
             return ResponseEntity.badRequest().build();
         }
-        accounts.forEach(account -> {
-            ParentCategory parent = this.parentCategoryRepo.findByName((account.getParentCategory()));
-
-            // The parent category couldn't be found using the name, it might have been passed in as an id
-            if (parent == null) {
-                if (!this.parentCategoryRepo.findById(account.getParentCategory()).isPresent()) {
-                    // if it's missing, error
-                    throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-                }
-            } else {
-                account.setParentCategory(parent.getId());
-            }
-
-        });
+//        accounts.forEach(account -> {
+//            ParentCategory parent = this.parentCategoryRepo.findByName((account.getParentCategory()));
+//
+//            // The parent category couldn't be found using the name, it might have been passed in as an id
+//            if (parent == null) {
+//                if (!this.parentCategoryRepo.findById(account.getParentCategory()).isPresent()) {
+//                    // if it's missing, error
+//                    throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+//                }
+//            } else {
+//                account.setParentCategory(parent.getId());
+//            }
+//
+//        });
 
         this.accountRepo.saveAll(accounts);
         return ResponseEntity.ok().build();

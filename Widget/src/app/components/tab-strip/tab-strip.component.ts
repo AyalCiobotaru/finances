@@ -1,5 +1,6 @@
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { SummaryGridComponent } from '../summary-grid/summary-grid.component';
 import { TransactionGridComponent } from '../transaction-grid/transaction-grid.component';
 
 @Component({
@@ -11,7 +12,8 @@ export class TabStripComponent implements OnInit {
 
 
   @ViewChildren('transaction') transactionComponent!: QueryList<TransactionGridComponent>;
-
+  
+  @ViewChildren('summary') summaryComponent!: QueryList<SummaryGridComponent>;
   /**
    * The currently selected tab index.
    */
@@ -23,6 +25,9 @@ export class TabStripComponent implements OnInit {
   }
 
   public onTabChanged(matTabChange: MatTabChangeEvent) {
+    if (matTabChange.index == 0) {
+      this.summaryComponent.first.renderRowsToFit();
+    }
     if (matTabChange.index == 1) {
       this.transactionComponent.first.renderRowsToFit();
     }

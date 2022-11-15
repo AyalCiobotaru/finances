@@ -10,12 +10,14 @@
  * Do not edit the class manually.
  */
 
+import { ParentCategory } from "./parentCategory";
+
 
 export interface Account { 
     id?: string;
     name?: string;
     type?: string;
     balance?: number;
-    parentCategory?: string;
+    parentCategory?: ParentCategory;
 }
 

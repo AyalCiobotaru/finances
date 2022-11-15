@@ -80,7 +80,9 @@ import { CsvUpdateUploaderComponent } from './components/csv-update-uploader/csv
 import { TransactionFormComponent } from './components/transaction-form-component/transaction-form.component';
 import { TabStripComponent } from './components/tab-strip/tab-strip.component';
 import { SummaryGridComponent } from './components/summary-grid/summary-grid.component';
+import { LicenseManager } from 'ag-grid-enterprise';
 
+LicenseManager.setLicenseKey("CompanyName=US Coast Guard Community Services Command,LicensedGroup=USCG,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=4,LicensedProductionInstancesCount=4,AssetReference=AG-024704,ExpiryDate=9_March_2023_[v2]_MTY3ODMyMDAwMDAwMA==881f6cf7765ec059341605719962a8a6")
 
 
 @NgModule({
