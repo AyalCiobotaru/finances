@@ -3,10 +3,10 @@
         [selectedIndex]="selected" (selectedTabChange)="onTabChanged($event);" style="height:100%; overflow: auto">
         <mat-tab>
             <ng-template mat-tab-label>
-            Summary
+                Summary
             </ng-template>
-            <div>
-                <p>The Summary will go here</p>
+            <div class="grid-container">
+                <app-summary-grid #summary></app-summary-grid>
             </div>
         </mat-tab>
         <mat-tab>

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { Account } from './account';
+import * as BigNumber from 'bignumber.js';
 
 
 export interface Transaction { 
@@ -17,7 +18,7 @@ export interface Transaction {
     description?: string;
     creditAccount?: Account;
     debitAccount?: Account;
-    amount?: number;
+    amount?: BigNumber.BigNumber;
     date?: string;
 }
 

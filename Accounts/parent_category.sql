@@ -1,0 +1,11 @@
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Credit Card");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Bank");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Investment");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Daily Living");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Entertainment");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Health");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Income");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Monthly Payments");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Personal");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Transportation");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Catch-All");

@@ -1,5 +1,6 @@
 package ac.myfinances.rest.model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,7 +29,7 @@ public class TransactionDTO  implements Serializable {
   private String debitAccountId;
 
   @JsonProperty("amount")
-  private Float amount;
+  private BigDecimal amount;
 
   @JsonProperty("date")
   @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
@@ -96,7 +97,7 @@ public class TransactionDTO  implements Serializable {
     this.debitAccountId = debitAccountId;
   }
 
-  public TransactionDTO amount(Float amount) {
+  public TransactionDTO amount(BigDecimal amount) {
     this.amount = amount;
     return this;
   }
@@ -109,11 +110,11 @@ public class TransactionDTO  implements Serializable {
   @ApiModelProperty(value = "")
 
 
-  public Float getAmount() {
+  public BigDecimal getAmount() {
     return this.amount;
   }
 
-  public void setAmount(Float amount) {
+  public void setAmount(BigDecimal amount) {
     this.amount = amount;
   }
 

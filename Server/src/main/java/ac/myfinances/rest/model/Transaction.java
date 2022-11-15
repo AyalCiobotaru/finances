@@ -1,5 +1,6 @@
 package ac.myfinances.rest.model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -49,7 +50,7 @@ public class Transaction  implements Serializable {
   private Account debitAccount;
 
   @JsonProperty("amount")
-  private Float amount;
+  private BigDecimal amount;
 
   @JsonProperty("date")
   @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
@@ -140,7 +141,7 @@ public class Transaction  implements Serializable {
     this.debitAccount = debitAccount;
   }
 
-  public Transaction amount(Float amount) {
+  public Transaction amount(BigDecimal amount) {
     this.amount = amount;
     return this;
   }
@@ -153,11 +154,11 @@ public class Transaction  implements Serializable {
   @ApiModelProperty(value = "")
 
 
-  public Float getAmount() {
+  public BigDecimal getAmount() {
     return this.amount;
   }
 
-  public void setAmount(Float amount) {
+  public void setAmount(BigDecimal amount) {
     this.amount = amount;
   }
 

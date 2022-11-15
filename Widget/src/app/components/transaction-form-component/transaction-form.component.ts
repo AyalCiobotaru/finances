@@ -25,7 +25,7 @@ export class TransactionFormComponent implements OnInit {
   public selectedDebitAccount: Account | undefined;
 
   constructor(private fb: FormBuilder, private accountService: AccountsService, private dataService: DataManagerService, @Inject(MAT_DIALOG_DATA) public data?: any) {
-    this.initializeAccountForm();
+    this.initializeTransactionForm();
     this.accounts = this.dataService.getAccounts();
     this.debitAccounts = JSON.parse(JSON.stringify(this.accounts));
 
@@ -83,9 +83,9 @@ export class TransactionFormComponent implements OnInit {
   }
 
   /**
-   * Create the alert form.
+   * Create the Transaction form.
    */
-   private initializeAccountForm() {
+   private initializeTransactionForm() {
     const today = new Date();
 
     let tomorrow = new Date();

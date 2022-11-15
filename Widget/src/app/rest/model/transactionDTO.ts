@@ -9,13 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-
+import * as BigNumber from 'bignumber.js'
 
 export interface TransactionDTO { 
     description?: string;
     creditAccountId?: string;
     debitAccountId?: string;
-    amount?: number;
+    amount?: BigNumber.BigNumber;
     date?: string;
 }
 

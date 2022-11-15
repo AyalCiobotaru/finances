@@ -1,14 +1,13 @@
 package ac.myfinances.rest.model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
 
 
 import org.hibernate.annotations.GenericGenerator;
@@ -35,10 +34,12 @@ public class Account  implements Serializable {
   private String type;
 
   @JsonProperty("balance")
-  private Float balance;
+  private BigDecimal balance;
 
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "parent_id")
   @JsonProperty("parentCategory")
-  private String parentCategory;
+  private ParentCategory parentCategory;
   public Account id(String id) {
     this.id = id;
     return this;
@@ -102,7 +103,7 @@ public class Account  implements Serializable {
     this.type = type;
   }
 
-  public Account balance(Float balance) {
+  public Account balance(BigDecimal balance) {
     this.balance = balance;
     return this;
   }
@@ -115,15 +116,15 @@ public class Account  implements Serializable {
   @ApiModelProperty(value = "")
 
 
-  public Float getBalance() {
+  public BigDecimal getBalance() {
     return this.balance;
   }
 
-  public void setBalance(Float balance) {
+  public void setBalance(BigDecimal balance) {
     this.balance = balance;
   }
 
-  public Account parentCategory(String parentCategory) {
+  public Account parentCategory(ParentCategory parentCategory) {
     this.parentCategory = parentCategory;
     return this;
   }
@@ -136,11 +137,11 @@ public class Account  implements Serializable {
   @ApiModelProperty(value = "")
 
 
-  public String getParentCategory() {
+  public ParentCategory getParentCategory() {
     return this.parentCategory;
   }
 
-  public void setParentCategory(String parentCategory) {
+  public void setParentCategory(ParentCategory parentCategory) {
     this.parentCategory = parentCategory;
   }
 
