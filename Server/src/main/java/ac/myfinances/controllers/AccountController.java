@@ -1,8 +1,8 @@
 package ac.myfinances.controllers;
 
-import ac.myfinances.generated.api.AccountsApi;
-import ac.myfinances.generated.model.Account;
-import ac.myfinances.generated.model.ParentCategory;
+import ac.myfinances.rest.api.AccountsApi;
+import ac.myfinances.rest.model.Account;
+import ac.myfinances.rest.model.ParentCategory;
 import ac.myfinances.repo.AccountRepository;
 import ac.myfinances.repo.ParentCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
