@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Account, AccountsService, Transaction, TransactionsService } from 'src/app/rest';
+import { Transaction, TransactionsService } from 'src/app/rest';
 import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
 import { TransactionFormComponent } from '../components/transaction-form-component/transaction-form.component';
 import { DataManagerService } from './data-manager.service';
-import * as BigNumber from 'bignumber.js'
 
 @Injectable({
   providedIn: 'root'
 })
 export class CsvUtilService {
 
-  constructor(private dataService: DataManagerService, private transactionsService: TransactionsService, private matDialogRef: MatDialog) { }
+  constructor(private dataService: DataManagerService, private matDialogRef: MatDialog) { }
 
   public processWorkbook(workbook : any, formValues: any): Promise<any> {
 

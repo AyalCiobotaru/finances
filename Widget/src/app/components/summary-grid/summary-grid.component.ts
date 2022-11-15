@@ -185,7 +185,7 @@ export class SummaryGridComponent implements OnInit {
    * @returns the number with commas every 3 digits
    */
   private numberWithCommas(number: BigNumber.BigNumber) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 }
