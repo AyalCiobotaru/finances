@@ -1,6 +1,7 @@
 package ac.myfinances.rest.model;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -12,6 +13,8 @@ import javax.validation.Valid;
 
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
+
 /**
  * Transaction
  */
@@ -53,8 +56,9 @@ public class Transaction  implements Serializable {
   private BigDecimal amount;
 
   @JsonProperty("date")
-  @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
-  private LocalDate date;
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+  @Column(columnDefinition = "datetime(3)")
+  private OffsetDateTime date;
   public Transaction id(String id) {
     this.id = id;
     return this;
@@ -162,7 +166,7 @@ public class Transaction  implements Serializable {
     this.amount = amount;
   }
 
-  public Transaction date(LocalDate date) {
+  public Transaction date(OffsetDateTime date) {
     this.date = date;
     return this;
   }
@@ -176,11 +180,11 @@ public class Transaction  implements Serializable {
 
   @Valid
 
-  public LocalDate getDate() {
+  public OffsetDateTime getDate() {
     return this.date;
   }
 
-  public void setDate(LocalDate date) {
+  public void setDate(OffsetDateTime date) {
     this.date = date;
   }
 

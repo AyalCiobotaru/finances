@@ -1,6 +1,7 @@
 package ac.myfinances.rest.model;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,7 +34,7 @@ public class TransactionDTO  implements Serializable {
 
   @JsonProperty("date")
   @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
-  private LocalDate date;
+  private OffsetDateTime date;
   public TransactionDTO description(String description) {
     this.description = description;
     return this;
@@ -118,7 +119,7 @@ public class TransactionDTO  implements Serializable {
     this.amount = amount;
   }
 
-  public TransactionDTO date(LocalDate date) {
+  public TransactionDTO date(OffsetDateTime date) {
     this.date = date;
     return this;
   }
@@ -132,11 +133,11 @@ public class TransactionDTO  implements Serializable {
 
   @Valid
 
-  public LocalDate getDate() {
+  public OffsetDateTime getDate() {
     return this.date;
   }
 
-  public void setDate(LocalDate date) {
+  public void setDate(OffsetDateTime date) {
     this.date = date;
   }
 
