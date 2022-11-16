@@ -9,3 +9,4 @@
 
 rootProject.name = 'finances'
 include('Server')
+include('Widget')

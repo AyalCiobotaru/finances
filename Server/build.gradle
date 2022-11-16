@@ -100,73 +100,11 @@ repositories {
 sourceSets{
     main {
         java {
-            srcDirs = ['src/main/java',
-                       'src/generated/java']
+            srcDirs = ['src/main/java']
         }
         resources {
-            srcDirs = ['src/main/resources',
-                       'src/generated/resources']
+            srcDirs = ['src/main/resources']
         }
-    }
-}
-
-swaggerSources {
-    finances {
-        inputFile = file("$rootDir/swagger/index.yaml")
-        ui {
-            outputDir = file("$rootDir/Server/src/generated/resources/static/")
-        }
-    }
-}
-
-
-
-task generateServerApi(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
-    group "Custom"
-    description "Generate the Server Api"
-
-    generatorName = "spring"
-    inputSpec = "$rootDir/swagger/index.yaml".toString()
-    outputDir = "$rootDir/Server/src/generated".toString()
-    templateDir = "$rootDir/swagger/templates"
-    apiPackage = "ac.myfinances.generated.api"
-    modelPackage = "ac.myfinances.generated.model"
-    validateSpec = false
-    configOptions = [
-            sourceFolder: "java",
-            interfaceOnly: "true",
-            serializableModel: "true",
-            describeAllEnumsAsStrings: "true"
-    ]
-}
-
-task generateAngularTypescriptApi(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
-    group "Custom"
-    description "Generate the Angular TS Api"
-
-    generatorName = "typescript-angular"
-    inputSpec = "$rootDir/swagger/index.yaml".toString()
-    outputDir = "$rootDir/Widget/src/generated/ts".toString()
-    apiPackage = "api"
-    modelPackage = "model"
-    validateSpec = false
-    configOptions = [
-            interfaceOnly: "true",
-            serializableModel: "true",
-            ngVersion: "14.2.2",
-            npmVersion: eagerlyFetchedVersion,
-            // when trying to use version.toString() or "$version", the property wasn't evaluated yet and it was returning
-            // "task ':generateAngularTypescriptApi' property 'version'" instead of evaluating the org.gradle.api.internal.provider.DefaultProperty.
-            // Couldn't use version.get() because it returned an error saying version didn't have a value meaning this config was getting evaulated
-            // before the gradle.properties. Creating a placeholder allowed the value to be passed in by eagerly fetching what version was
-            sourceMap: "true",
-            supportsES6: "true"
-    ]
-}
-
-task swaggerClean(type: Delete) {
-    doFirst {
-        delete 'src/generated'
     }
 }
 
@@ -213,26 +151,6 @@ bootWar {
     archiveFileName = "myFinances#${version}.war"
 }
 
-task npmInstallFrontEnd(type: Exec) {
-
-    String npm = 'npm';
-
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        npm = 'npm.cmd'
-    }
-
-    workingDir 'src/generated/ts'
-    commandLine npm, 'install', '--legacy-peer-deps'
-}
-
-task npmBuildFrontEnd(type: NpmTask) {
-    args = ["--prefix", "src/generated/ts", "run", "build"]
-}
-
-task publishFrontEnd(type: NpmTask) {
-    args = ['publish', 'src/generated/ts/dist']
-}
-
 bootWar.doLast { task ->
     ant.checksum file: task.archivePath
 }
@@ -267,11 +185,3 @@ task updateVersion() {
 
     }
 }
-
-clean.dependsOn(swaggerClean)
-
-generateServerApi.dependsOn(clean)
-publishFrontEnd.dependsOn(npmBuildFrontEnd)
-npmBuildFrontEnd.dependsOn(npmInstallFrontEnd)
-npmInstallFrontEnd.dependsOn(generateAngularTypescriptApi)
-
