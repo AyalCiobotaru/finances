@@ -46,7 +46,8 @@ public class TransactionService {
             accountMap.put(creditedAccount.getName(), creditedAccount);
 
             Account debitedAccount = accountMap.get(transaction.getDebitAccount().getName());
-            debitedAccount.balance(debitedAccount.getBalance().subtract(amount));
+            // Income is slightly different, NEVER take money out of an income paper account, it should always be a positive number.
+            debitedAccount.balance(debitedAccount.getType().equals("Income") ? debitedAccount.getBalance().add(amount) : debitedAccount.getBalance().subtract(amount));
             accountMap.put(debitedAccount.getName(), debitedAccount);
 
         });

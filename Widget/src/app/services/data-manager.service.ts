@@ -64,7 +64,11 @@ export class DataManagerService {
               
               if (map && transaction.creditAccount && transaction.debitAccount) {
                 map.set(transaction.creditAccount.name!, (map.get(transaction.creditAccount.name!) ? map.get(transaction.creditAccount.name!) : new BigNumber.BigNumber(0))!.plus(transaction.amount!));
-                map.set(transaction.debitAccount.name!,  (map.get(transaction.debitAccount.name!)  ? map.get(transaction.debitAccount.name!) : new BigNumber.BigNumber(0))!.minus(transaction.amount!));
+                if (transaction.debitAccount.type === "Income") {
+                  map.set(transaction.debitAccount.name!,  (map.get(transaction.debitAccount.name!)  ? map.get(transaction.debitAccount.name!) : new BigNumber.BigNumber(0))!.plus(transaction.amount!));
+                } else {
+                  map.set(transaction.debitAccount.name!,  (map.get(transaction.debitAccount.name!)  ? map.get(transaction.debitAccount.name!) : new BigNumber.BigNumber(0))!.minus(transaction.amount!));
+                }
               } else {
                 console.log("An Account in transaction is null or it doesn't have a name")
                 console.log(transaction);

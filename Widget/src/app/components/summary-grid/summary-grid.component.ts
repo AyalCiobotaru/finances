@@ -40,6 +40,8 @@ export class SummaryGridComponent implements OnInit {
 
   public groupDisplayType: RowGroupingDisplayType  = 'groupRows';
 
+  public groupDefaultExpanded = 1;
+
   ngOnInit(): void {
     this.dataService.instantiateAccountData().then(() => {
       this.setupDataSource();
@@ -122,11 +124,21 @@ export class SummaryGridComponent implements OnInit {
 
     let colDefs: ColDef[] = [
       {
+        headerName: 'Type',
+        field: 'type',
+        hide: true,
+        rowGroup: true,
+        valueGetter: (params) => {
+          if (params.data && params.data.account.type) {
+            return params.data.account.type
+          }
+        }
+      },
+      {
         headerName: 'Parent Category',
         field: 'parentCategory',
         hide: true,
         rowGroup: true,
-        width: 150,
         valueGetter: (params) => {
           if (params.data && params.data.account.parentCategory) {
             return params.data.account.parentCategory.name
