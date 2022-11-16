@@ -3,7 +3,6 @@ package ac.myfinances.controllers;
 import ac.myfinances.rest.api.TransactionsApi;
 import ac.myfinances.rest.model.Transaction;
 import ac.myfinances.rest.model.TransactionDTO;
-import ac.myfinances.repo.AccountRepository;
 import ac.myfinances.repo.TransactionRepository;
 import ac.myfinances.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,6 @@ public class TransactionController implements TransactionsApi {
 
     @Autowired
     private TransactionRepository transactionRepository;
-
-    @Autowired
-    private AccountRepository accountRepository;
 
     @Autowired
     private TransactionService transactionService;
