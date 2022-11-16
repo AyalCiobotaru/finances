@@ -78,7 +78,6 @@ export class DataManagerService {
             reject()
           }
         })
-        console.log(this.summaryList);
         this.transactionChanges.next();
         resolve();
       })

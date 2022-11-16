@@ -2,9 +2,10 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataManagerService } from 'src/app/services/data-manager.service';
-import { Account, AccountsService } from 'src/app/rest';
+import { Account } from 'src/app/rest';
 import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
 import { Observable, startWith, map } from 'rxjs';
+import { FilterUtilService } from 'src/app/services/filter-util.service';
 
 @Component({
   selector: 'app-transaction-form',
@@ -16,18 +17,16 @@ export class TransactionFormComponent implements OnInit {
   public transactionForm!: FormGroup;
 
   public accounts: Account[] = [];
-  public debitAccounts: Account[] = [];
 
-  public creditFilteredAccounts!: Observable<Account[]>;
-  public debitFilteredAccounts!: Observable<Account[]>;
+  public creditFilteredAccounts?: Observable<Account[]>;
+  public debitFilteredAccounts?: Observable<Account[]>;
 
   public selectedCreditAccount: Account | undefined;
   public selectedDebitAccount: Account | undefined;
 
-  constructor(private fb: FormBuilder, private accountService: AccountsService, private dataService: DataManagerService, @Inject(MAT_DIALOG_DATA) public data?: any) {
+  constructor(private fb: FormBuilder, public filterService: FilterUtilService, private dataService: DataManagerService, @Inject(MAT_DIALOG_DATA) public data?: any) {
     this.initializeTransactionForm();
     this.accounts = this.dataService.getAccounts();
-    this.debitAccounts = JSON.parse(JSON.stringify(this.accounts));
 
     if (this.data) {
       if (this.data.creditAccountId) {
@@ -37,29 +36,14 @@ export class TransactionFormComponent implements OnInit {
       if (this.data.debitAccountId) {
         this.selectedDebitAccount = this.accounts.find(account => account.name?.toLowerCase() === this.data.debitAccountName.toLowerCase())
         this.transactionForm.get('debitAccount')?.setValue(this.selectedDebitAccount);
-
       }
     }
-
-    
    }
 
   ngOnInit(): void {
-    this.creditFilteredAccounts = this.transactionForm.controls['creditAccount'].valueChanges.pipe(
-      startWith(''),
-      map(value => {
-        const name = typeof value === 'string' ? value : value?.name;
-        return name ? this._filter(name as string, this.accounts) : this.accounts.slice();
-      }),
-    );
+    this.creditFilteredAccounts = this.filterService.filterForm(this.transactionForm, this.accounts, 'creditAccount');
 
-    this.debitFilteredAccounts = this.transactionForm.controls['debitAccount'].valueChanges.pipe(
-      startWith(''),
-      map(value => {
-        const name = typeof value === 'string' ? value : value?.name;
-        return name ? this._filter(name as string, this.debitAccounts) : this.debitAccounts.slice();
-      }),
-    );
+    this.debitFilteredAccounts = this.filterService.filterForm(this.transactionForm, this.accounts, 'debitAccount');
   }
 
   onSubmit(): void {
@@ -117,16 +101,6 @@ export class TransactionFormComponent implements OnInit {
     }
   }
 
-  public displayFn(account: Account): string {
-    return account && account.name ? account.name : '';
-  }
-
-  private _filter(name: string, accountList: Account[]): Account[] {
-    const filterValue = name.toLowerCase();
-
-    return accountList.filter(option => option.name?.toLowerCase().includes(filterValue));
-  }
-
   /**
    * Marks a form group as touched recursively to prompt the user that error exist.
    * @param control the form control to touch.
@@ -138,14 +112,5 @@ export class TransactionFormComponent implements OnInit {
         this.markFormGroupTouched(con);
       }
     });
-  }
-
-  public onKey(value: any) { 
-    this.accounts = this.search(value);
-  }
-
-  private search(value: any) { 
-    let filter = value.toLowerCase();
-    return this.accounts.filter(option => option.name?.toLowerCase().includes(filter));
   }
 }

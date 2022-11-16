@@ -4,10 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { Account, Transaction,  } from 'src/app/rest';
 import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
 import { CsvUtilService } from '../../services/csv-util.service';
-import { ColDef, FirstDataRenderedEvent,  } from 'ag-grid-community';
+import { ColDef, FirstDataRenderedEvent, GridOptions,  } from 'ag-grid-community';
 import { DataManagerService } from '../../services/data-manager.service';
 import { TransactionFormComponent } from '../transaction-form-component/transaction-form.component';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { FilterUtilService } from 'src/app/services/filter-util.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-transaction-grid',
@@ -29,26 +31,39 @@ export class TransactionGridComponent implements OnInit {
    */
   public columnDefs: ColDef[] = [];
 
-  private transactionChangesSubscription: Subscription;
+  public filteredAccounts?: Observable<Account[]>;
 
-  constructor(public dialog: MatDialog, private csvUtilService: CsvUtilService, private dataService: DataManagerService) { 
-    this.transactionChangesSubscription = this.dataService.getTransactionChanges().subscribe(this.handleTransactionChanges.bind(this));
+  public filterFormControl = new FormControl<String | Account | null>("");
+
+  private filterAccount?: Account;
+
+  constructor(public dialog: MatDialog, private csvUtilService: CsvUtilService, private dataService: DataManagerService, public filterService: FilterUtilService) { 
+    this.dataService.getTransactionChanges().subscribe(this.handleTransactionChanges.bind(this));
   }
 
   ngOnInit(): void {
     this.dataService.instantiateAccountData().then(() => {
+      this.filterFormControl.valueChanges.subscribe(response => {
+        if (typeof response === 'object') {
+          this.filterAccount = (response as Account);
+          this.gridApi.onFilterChanged();
+        } else {
+          // If there is an account to filter on but the response is not an object, then the filter needs to be removed
+          if (this.filterAccount !== undefined) {
+            this.filterAccount = undefined;
+            this.gridApi.onFilterChanged();
+          }
+        }
+      })
+
+      this.filteredAccounts = this.filterService.filterForm(this.filterFormControl, this.dataService.getAccounts(), "")
       this.setupGrid();
     })
   }
 
-  gridOptions = {
-    // defaultColDef: {
-    //   filter: true,
-    //   sortable: true,
-    //   // editable: this.getIsAdmin.bind(this),
-    //   resizable: true
-    // },
-    context: {parentComponent: this},
+  gridOptions: GridOptions = {
+    isExternalFilterPresent: this.isExternalFilterPresent.bind(this),
+    doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
     // onCellEditingStopped: this.CellEdittingStopped.bind(this) 
   }
 
@@ -80,6 +95,10 @@ export class TransactionGridComponent implements OnInit {
       {
         headerName: 'Date',
         field: 'date',
+        valueFormatter: (params) => {
+          return new Date(params.value).toLocaleDateString();
+        },
+        sort: 'desc'
       },
       {
         headerName: 'Description',
@@ -114,9 +133,21 @@ export class TransactionGridComponent implements OnInit {
     return params.colDef.filterParams.accounts.find((account: Account) => account.id === params.value).name;
   }
 
+  public isExternalFilterPresent() : boolean {
+    return this.filterAccount !== undefined;
+  }
+
+  public doesExternalFilterPass(node: any): boolean {
+    if (this.filterAccount) {
+      return this.filterAccount.id == node.data.creditAccount.id || this.filterAccount.id == node.data.debitAccount.id
+    } else {
+      return false
+    }
+  }
+
 
   onFirstDataRendered(params: FirstDataRenderedEvent) {
-    // params.api.sizeColumnsToFit();
+    params.api.sizeColumnsToFit();
   }
 
   public renderRowsToFit() {
@@ -128,7 +159,6 @@ export class TransactionGridComponent implements OnInit {
     this.gridApi.showLoadingOverlay();
     this.gridApi.hideOverlay();
     this.dataSource.data = this.dataService.getTransactions();
-
   }
 
   public exportCSV() {
