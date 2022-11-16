@@ -4,4 +4,23 @@
 
 .finance-grid-buttons {
   background: lightgray;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.flexMiddleSpacing {
+  flex-grow: 20;
+}
+
+.accountFilterLabel {
+  padding: 10px;
+}
+
+.accountFilter {
+  background-color: rgb(13, 71, 161);
+  width: 300px;
+  color: white;
+  text-align: center;
+  border-radius: 10px;
+  caret-color: white;
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { ColDef, _ } from 'ag-grid-community';
+import { ColDef, RowGroupingDisplayType } from 'ag-grid-community';
 import * as BigNumber from 'bignumber.js';
 import { SummaryRow } from 'src/app/models/summaryRow';
 import { Account } from 'src/app/rest';
@@ -37,6 +37,8 @@ export class SummaryGridComponent implements OnInit {
   private months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           
   constructor(private dataService: DataManagerService) { }
+
+  public groupDisplayType: RowGroupingDisplayType  = 'groupRows';
 
   ngOnInit(): void {
     this.dataService.instantiateAccountData().then(() => {
@@ -105,8 +107,8 @@ export class SummaryGridComponent implements OnInit {
 
   }
 
-  public onFirstDataRendered() {
-    this.renderRowsToFit();
+  public onFirstDataRendered(params: any) {
+    params.gridApi.sizeColumnsToFit();
   }
   
   public renderRowsToFit() {
@@ -124,7 +126,7 @@ export class SummaryGridComponent implements OnInit {
         field: 'parentCategory',
         hide: true,
         rowGroup: true,
-        width: 125,
+        width: 150,
         valueGetter: (params) => {
           if (params.data && params.data.account.parentCategory) {
             return params.data.account.parentCategory.name
