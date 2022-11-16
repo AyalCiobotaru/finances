@@ -4,12 +4,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { Account, Transaction,  } from 'src/app/rest';
 import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
 import { CsvUtilService } from '../../services/csv-util.service';
-import { ColDef, FirstDataRenderedEvent, GridOptions,  } from 'ag-grid-community';
+import { CellDoubleClickedEvent, ColDef, FirstDataRenderedEvent, GridOptions,  } from 'ag-grid-community';
 import { DataManagerService } from '../../services/data-manager.service';
 import { TransactionFormComponent } from '../transaction-form-component/transaction-form.component';
 import { Observable } from 'rxjs';
 import { FilterUtilService } from 'src/app/services/filter-util.service';
 import { FormControl } from '@angular/forms';
+import { MessagingService } from 'src/app/services/messaging.service';
 
 @Component({
   selector: 'app-transaction-grid',
@@ -21,7 +22,7 @@ export class TransactionGridComponent implements OnInit {
    /**
    * The grids datasource containing the data to display.
    */
-  dataSource = new MatTableDataSource<Transaction>();
+  public dataSource = new MatTableDataSource<Transaction>();
   
   /** The grid Api */
   public gridApi: any
@@ -31,14 +32,30 @@ export class TransactionGridComponent implements OnInit {
    */
   public columnDefs: ColDef[] = [];
 
+  /**
+   * List for accounts that pass the autocomplete filter
+   */
   public filteredAccounts?: Observable<Account[]>;
 
+  /**
+   * The form control that will display the autocomplete for filtering
+   */
   public filterFormControl = new FormControl<String | Account | null>("");
 
+  /**
+   * The account to filter using the dropdown
+   */
   private filterAccount?: Account;
 
-  constructor(public dialog: MatDialog, private csvUtilService: CsvUtilService, private dataService: DataManagerService, public filterService: FilterUtilService) { 
-    this.dataService.getTransactionChanges().subscribe(this.handleTransactionChanges.bind(this));
+  /**
+   * The account and month to filter by
+   */
+  private accountByDateFilter?: Account;
+  private dateFilterIndex?: number;
+
+  constructor(public dialog: MatDialog, private csvUtilService: CsvUtilService, private dataService: DataManagerService, public filterService: FilterUtilService, private messagingService: MessagingService) { 
+    this.messagingService.getTransactionChangesAsObservable().subscribe(this.handleTransactionChanges.bind(this));
+    this.messagingService.getCellDoubleClickedAsObservable().subscribe(this.handleCellDoubleClickedInSummary.bind(this));
   }
 
   ngOnInit(): void {
@@ -134,19 +151,25 @@ export class TransactionGridComponent implements OnInit {
   }
 
   public isExternalFilterPresent() : boolean {
-    return this.filterAccount !== undefined;
+    return this.filterAccount !== undefined || this.accountByDateFilter !== undefined;
   }
 
   public doesExternalFilterPass(node: any): boolean {
     if (this.filterAccount) {
       return this.filterAccount.id == node.data.creditAccount.id || this.filterAccount.id == node.data.debitAccount.id
+    } else if (this.accountByDateFilter) {
+      let passesAccountFilter = (this.accountByDateFilter.id == node.data.creditAccount.id) || (this.accountByDateFilter.id == node.data.debitAccount.id);
+      if (passesAccountFilter) {
+        return new Date(node.data.date).getMonth() == this.dateFilterIndex;
+      } else {
+        return false;
+      }
     } else {
       return false
     }
   }
 
-
-  onFirstDataRendered(params: FirstDataRenderedEvent) {
+  public onFirstDataRendered(params: FirstDataRenderedEvent) {
     params.api.sizeColumnsToFit();
   }
 
@@ -154,7 +177,7 @@ export class TransactionGridComponent implements OnInit {
     this.gridApi.sizeColumnsToFit();
   }
 
-  onGridReady(params : any) {
+  public onGridReady(params : any) {
     this.gridApi = params.api;
     this.gridApi.showLoadingOverlay();
     this.gridApi.hideOverlay();
@@ -201,5 +224,19 @@ export class TransactionGridComponent implements OnInit {
 
   private handleTransactionChanges() {
     this.dataSource.data = this.dataService.getTransactions();
+  }
+
+  public clearFilters() {
+    this.accountByDateFilter = undefined;
+    this.filterAccount = undefined;
+    this.gridApi.onFilterChanged();
+  }
+
+  private handleCellDoubleClickedInSummary(event: CellDoubleClickedEvent) {
+    console.log(event);
+    this.accountByDateFilter = event.data.account;
+    this.dateFilterIndex = parseInt(event.column.getColId());
+    this.gridApi.onFilterChanged()
+
   }
 }
