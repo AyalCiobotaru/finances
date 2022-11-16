@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
 import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/app/rest';
 import * as BigNumber from 'bignumber.js';
-import { NodeWithI18n } from '@angular/compiler';
+import { MessagingService } from './messaging.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,25 +12,18 @@ export class DataManagerService {
 
   private transactionMap: Map<string, Transaction>;
 
-  private transactionChanges : Subject<void>;
-
   /**
    * List of months Map with account -> amount for given month
    */
   private summaryList : Map<string, BigNumber.BigNumber>[];
 
-  constructor(private transactionService: TransactionsService, private accountService: AccountsService, private parentCategoryService: ParentCategoryService) {
+  constructor(private transactionService: TransactionsService, private accountService: AccountsService, private messagingService: MessagingService) {
     this.accountMap = new Map<string, Account>();
     this.transactionMap = new Map<string, Transaction>();
-    this.transactionChanges = new Subject<void>();
     this.summaryList = [];
     for (let index = 0; index < 12; index++) {
       this.summaryList.push(new Map<string, BigNumber.BigNumber>());
     }
-  }
-
-  public getTransactionChanges() : Observable<void> {
-    return this.transactionChanges.asObservable();
   }
 
   public instantiateAccountData() {
@@ -82,7 +74,7 @@ export class DataManagerService {
             reject()
           }
         })
-        this.transactionChanges.next();
+        this.messagingService.transactionsChanged();
         resolve();
       })
     })
@@ -98,7 +90,7 @@ export class DataManagerService {
             console.log("Invalid transaction, no id", transaction);
           }
         })
-        this.transactionChanges.next();
+        this.messagingService.transactionsChanged();
         resolve()
       }, (error: any) => {
         console.log("Failed to update transaction")

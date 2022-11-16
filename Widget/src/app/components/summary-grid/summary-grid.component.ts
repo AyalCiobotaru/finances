@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { ColDef, RowGroupingDisplayType } from 'ag-grid-community';
+import {ColDef, GridOptions, RowGroupingDisplayType } from 'ag-grid-community';
 import * as BigNumber from 'bignumber.js';
 import { SummaryRow } from 'src/app/models/summaryRow';
 import { Account } from 'src/app/rest';
 import { DataManagerService } from 'src/app/services/data-manager.service';
+import { MessagingService } from 'src/app/services/messaging.service';
 
 @Component({
   selector: 'app-summary-grid',
@@ -36,11 +37,17 @@ export class SummaryGridComponent implements OnInit {
    */
   private months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           
-  constructor(private dataService: DataManagerService) { }
-
+  /**
+   * Don't create a column for the grouping of the rows
+   */
   public groupDisplayType: RowGroupingDisplayType  = 'groupRows';
-
+  
+  /**
+   * Default to expanding one of the groups
+   */
   public groupDefaultExpanded = 1;
+  
+  constructor(private dataService: DataManagerService, private messagingService: MessagingService) { }
 
   ngOnInit(): void {
     this.dataService.instantiateAccountData().then(() => {
@@ -54,6 +61,10 @@ export class SummaryGridComponent implements OnInit {
     sortable: true,
     filter: 'agSetColumnFilter',
     width: 75
+  }
+
+  gridOptions: GridOptions = {
+    onCellDoubleClicked: (params) => this.messagingService.cellDoubleClicked(params)
   }
 
   /**
@@ -200,6 +211,6 @@ export class SummaryGridComponent implements OnInit {
    */
   private numberWithCommas(number: BigNumber.BigNumber) {
     return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+  }
 
 }
