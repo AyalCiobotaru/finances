@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.Optional;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-11-10T22:47:30.445-05:00[America/New_York]")
 
@@ -71,7 +72,7 @@ public interface TransactionsApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<List<Transaction>> updateTransactions(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody List<TransactionDTO> transactionDTO) {
+    default ResponseEntity<List<Transaction>> updateOrAddTransactions(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody Map<String, TransactionDTO> transactionDTO) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

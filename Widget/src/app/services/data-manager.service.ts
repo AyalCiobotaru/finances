@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/app/rest';
+import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionDTO, TransactionsService } from 'src/app/rest';
 import * as BigNumber from 'bignumber.js';
 import { MessagingService } from './messaging.service';
 
@@ -80,9 +80,9 @@ export class DataManagerService {
     })
   } 
 
-  public updateTransactions(transactions: Transaction[]) {
+  public updateTransactions(transactionsMap: Map<String, TransactionDTO>) {
     return new Promise<void>((resolve) => {
-      this.transactionService.updateTransactions(transactions).subscribe((updatedTransactions: Transaction[]) => {
+      this.transactionService.updateTransactions(transactionsMap).subscribe((updatedTransactions: Transaction[]) => {
         updatedTransactions.forEach((transaction: Transaction) => {
           if (transaction.id) {
             this.transactionMap.set(transaction.id, transaction);

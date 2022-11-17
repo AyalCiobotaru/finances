@@ -1,5 +1,6 @@
 package ac.myfinances.services;
 
+import ac.myfinances.repo.TransactionRepository;
 import ac.myfinances.rest.model.Account;
 import ac.myfinances.rest.model.Transaction;
 import ac.myfinances.rest.model.TransactionDTO;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -16,6 +18,75 @@ public class TransactionService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+
+    /**
+     * Handles separating the incoming transactions to new or updated ones and then saves them
+     * @param transactions Map of id to transaction
+     * @return updated transactions
+     */
+    public List<Transaction> updateOrAddLogic(Map<String,TransactionDTO> transactions) {
+        List<TransactionDTO> newTransactionDTOs = new ArrayList<>();
+        List<Transaction> newTransactions = new ArrayList<>();
+        List<Transaction> savedTransactions = new ArrayList<>();
+        List<Transaction> updatedTransactions = new ArrayList<>();
+
+        HashMap<String, TransactionDTO> transactionToUpdate = new HashMap<>();
+
+        // Separate transactionDTO into new transactions and those to update
+        transactions.forEach((key, value) -> {
+            if (key.contains("NEW")) {
+                newTransactionDTOs.add(value);
+            } else {
+                transactionToUpdate.put(key, value);
+            }
+        });
+
+        // If we have new transactions, verify the account, handle account changes and save them
+        if (newTransactionDTOs.size() > 0) {
+            newTransactionDTOs.forEach(transactionDTO -> {
+                Transaction newTransaction = this.verifyAccountId(transactionDTO);
+                this.handleAccountChanges(newTransaction);
+                newTransactions.add(newTransaction);
+            });
+            savedTransactions = this.transactionRepository.saveAll(newTransactions);
+        }
+
+        // If we have transactions to update, revert the old amounts for accounts, handle the new ones and save them
+        if (transactionToUpdate.size() > 0) {
+            this.revertOldTransactionAccounts(transactionToUpdate);
+            List<Transaction> dbTransactions = this.updateTransactions(transactionToUpdate);
+            this.handleAccountChanges(dbTransactions);
+            updatedTransactions = this.transactionRepository.saveAll(dbTransactions);
+        }
+
+        // combine the two lists and return
+        updatedTransactions.addAll(savedTransactions);
+        return updatedTransactions;
+    }
+
+    /**
+     * Gets transaction objects from the db based off of an id updates the fields.
+     * @param transactions Map of id to TransactionDTO.
+     * @return list of transactions to be saved.
+     */
+    public List<Transaction> updateTransactions(Map<String, TransactionDTO> transactions) {
+        return this.transactionRepository.findAllById(new ArrayList<>(transactions.keySet())).
+                stream().peek(t -> {
+                    TransactionDTO dto = transactions.get(t.getId());
+                    t.setDescription(dto.getDescription());
+                    t.setAmount(dto.getAmount());
+                    t.setDate(dto.getDate());
+                    if (!dto.getCreditAccountId().equals(t.getCreditAccount().getId())) {
+                        this.accountRepository.findById(dto.getCreditAccountId()).ifPresent(t::setCreditAccount);
+                    }
+                    if (!dto.getDebitAccountId().equals(t.getDebitAccount().getId())) {
+                        this.accountRepository.findById(dto.getDebitAccountId()).ifPresent(t::setCreditAccount);
+                    }
+                }).collect(Collectors.toList());
+    }
 
     public Transaction verifyAccountId(TransactionDTO transactionDTO) {
         Transaction transaction = new Transaction();
@@ -31,27 +102,54 @@ public class TransactionService {
     }
 
     public void handleAccountChanges(List<Transaction> transactions) {
+        transactions.forEach(this::handleAccountChanges);
+    }
 
+    public void handleAccountChanges(Transaction transaction) {
         HashMap<String, Account> accountMap = new HashMap<>();
         List<Account> accounts = this.accountRepository.findAll();
         accounts.forEach(account -> {
             accountMap.put(account.getName(), account);
         });
+        HashMap<String, Account> accountsToUpdate = new HashMap<>();
 
-        transactions.forEach(transaction -> {
-            BigDecimal amount = transaction.getAmount();
+        BigDecimal amount = transaction.getAmount();
 
-            Account creditedAccount = accountMap.get(transaction.getCreditAccount().getName());
-            creditedAccount.balance(creditedAccount.getBalance().add(amount));
-            accountMap.put(creditedAccount.getName(), creditedAccount);
+        Account creditedAccount = accountMap.get(transaction.getCreditAccount().getName());
+        creditedAccount.balance(creditedAccount.getBalance().add(amount));
+        accountsToUpdate.put(creditedAccount.getName(), creditedAccount);
 
-            Account debitedAccount = accountMap.get(transaction.getDebitAccount().getName());
+        Account debitedAccount = accountMap.get(transaction.getDebitAccount().getName());
+        // Income is slightly different, NEVER take money out of an income paper account, it should always be a positive number.
+        debitedAccount.balance(debitedAccount.getType().equals("Income") ? debitedAccount.getBalance().add(amount) : debitedAccount.getBalance().subtract(amount));
+        accountsToUpdate.put(debitedAccount.getName(), debitedAccount);
+
+        this.accountRepository.saveAll(accountsToUpdate.values());
+    }
+
+    private void revertOldTransactionAccounts(Map<String, TransactionDTO> transactions) {
+        HashMap<String, Account> accountMap = new HashMap<>();
+        List<Account> accounts = this.accountRepository.findAll();
+        accounts.forEach(account -> {
+            accountMap.put(account.getId(), account);
+        });
+        HashMap<String, Account> accountsToUpdate = new HashMap<>();
+
+        new ArrayList<>(transactions.values()).forEach(t -> {
+            BigDecimal amount = t.getAmount();
+
+            Account creditedAccount = accountMap.get(t.getCreditAccountId());
+            creditedAccount.balance(creditedAccount.getBalance().subtract(amount));
+            accountsToUpdate.put(creditedAccount.getName(), creditedAccount);
+
+            Account debitedAccount = accountMap.get(t.getDebitAccountId());
             // Income is slightly different, NEVER take money out of an income paper account, it should always be a positive number.
-            debitedAccount.balance(debitedAccount.getType().equals("Income") ? debitedAccount.getBalance().add(amount) : debitedAccount.getBalance().subtract(amount));
-            accountMap.put(debitedAccount.getName(), debitedAccount);
+            debitedAccount.balance(debitedAccount.getType().equals("Income") ? debitedAccount.getBalance().subtract(amount) : debitedAccount.getBalance().add(amount));
+            accountsToUpdate.put(debitedAccount.getName(), debitedAccount);
 
         });
 
-        this.accountRepository.saveAll(accountMap.values());
+        this.accountRepository.saveAll(accountsToUpdate.values());
+
     }
 }

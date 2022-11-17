@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class TransactionController implements TransactionsApi {
@@ -27,23 +30,13 @@ public class TransactionController implements TransactionsApi {
     }
 
     @Override
-    public ResponseEntity<List<Transaction>> updateTransactions(List<TransactionDTO> transactions) {
+    public ResponseEntity<List<Transaction>> updateOrAddTransactions(Map<String, TransactionDTO> transactions) {
         if (transactions == null) {
             return ResponseEntity.badRequest().build();
         }
+        List<Transaction> updatedTransactions = this.transactionService.updateOrAddLogic(transactions);
 
-        List<Transaction> verifiedAccountsInTransactions = new ArrayList<>();
-
-        transactions.forEach(transaction -> {
-            Transaction verifiedTransaction = this.transactionService.verifyAccountId(transaction);
-            verifiedAccountsInTransactions.add(verifiedTransaction);
-        });
-
-        this.transactionService.handleAccountChanges(verifiedAccountsInTransactions);
-
-        List<Transaction> latestTransaction = this.transactionRepository.saveAll(verifiedAccountsInTransactions);
-
-        return ResponseEntity.ok(latestTransaction);
+        return ResponseEntity.ok(updatedTransactions);
     }
 
 }

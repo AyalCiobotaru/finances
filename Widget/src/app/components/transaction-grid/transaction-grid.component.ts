@@ -25,31 +25,31 @@ export class TransactionGridComponent implements OnInit {
    */
   public dataSource = new MatTableDataSource<Transaction>();
   
-  /** The grid Api */
+  /** The grid Api. */
   public gridApi: any
 
   /**
-   * Column Definitions
+   * Column Definitions.
    */
   public columnDefs: ColDef[] = [];
 
   /**
-   * List for accounts that pass the autocomplete filter
+   * List for accounts that pass the autocomplete filter.
    */
   public filteredAccounts?: Observable<Account[]>;
 
   /**
-   * The form control that will display the autocomplete for filtering
+   * The form control that will display the autocomplete for filtering.
    */
   public filterFormControl = new FormControl<String | Account | null>("");
 
   /**
-   * The account to filter using the dropdown
+   * The account to filter using the dropdown.
    */
   private filterAccount?: Account;
 
   /**
-   * The account and month to filter by
+   * The account and month to filter by.
    */
   private accountByDateFilter?: Account;
   private dateFilterIndex?: number;
@@ -92,6 +92,20 @@ export class TransactionGridComponent implements OnInit {
     minWidth: 150
   }
 
+  /**
+   * Gets called once the grid is ready and gets the data.
+   * @param params 
+   */
+     public onGridReady(params : any) {
+      this.gridApi = params.api;
+      this.gridApi.showLoadingOverlay();
+      this.gridApi.hideOverlay();
+      this.dataSource.data = this.dataService.getTransactions();
+    }
+
+  /**
+   * Defines the columns and how to parse, render, and edit the data.
+   */
   private setupGrid() {
     let colDefs: ColDef[] = [
       {
@@ -184,19 +198,20 @@ export class TransactionGridComponent implements OnInit {
     this.columnDefs = colDefs;
   }
 
-  public cellValueChanged(params: any) {
-    console.log(params);
-  }
-
-  private getAccountNameById(params: any) {
-    let val = params.value ? params.value : params.newValue;
-    return params.colDef.filterParams.accounts.find((account: Account) => account.id === val).name;
-  }
-
+  // #region External Filter 
+  /**
+   * AG Grid event handler to tell the grid if it should run `doesExternalFilterPass`.
+   * @returns true or false if there is an external filter.
+   */
   public isExternalFilterPresent() : boolean {
     return this.filterAccount !== undefined || this.accountByDateFilter !== undefined;
   }
 
+  /**
+   * Goes through each node in the data to see if it passes the external filter.
+   * @param node the node to test against.
+   * @returns true if it passes and should be visible, false otherwise.
+   */
   public doesExternalFilterPass(node: any): boolean {
     if (this.filterAccount) {
       return this.filterAccount.id == node.data.creditAccount.id || this.filterAccount.id == node.data.debitAccount.id
@@ -212,25 +227,52 @@ export class TransactionGridComponent implements OnInit {
     }
   }
 
+  // #endregion
+
+  /**
+  * Event handler for when a value has changed in a cell.
+  * @param params CellValueChangedParams
+  */
+  public cellValueChanged(params: any) {
+    console.log(params);
+  }
+
+  /**
+   * Will size the grid appriopriately for the screen.
+   * @param params used to get the grid api
+   */
   public onFirstDataRendered(params: FirstDataRenderedEvent) {
     params.api.sizeColumnsToFit();
   }
 
+  /**
+   * Helper function to resize the rows used when switching tabs.
+   */
   public renderRowsToFit() {
     this.gridApi.sizeColumnsToFit();
   }
 
-  public onGridReady(params : any) {
-    this.gridApi = params.api;
-    this.gridApi.showLoadingOverlay();
-    this.gridApi.hideOverlay();
-    this.dataSource.data = this.dataService.getTransactions();
+  /**
+   * Helper function to get the name of an account by it's id.
+   * @param params any params from an event that need to use this function.
+   * @returns the account name if it is found by it's id.
+   */
+   private getAccountNameById(params: any) {
+    let val = params.value ? params.value : params.newValue;
+    return params.colDef.filterParams.accounts.find((account: Account) => account.id === val).name;
   }
 
+  // #region Button Handler
+  /**
+   * Button click handler, simple export.
+   */
   public exportCSV() {
     this.gridApi.exportDataAsCsv();
   }
 
+  /**
+   * Button click handler, will import a csv file.
+   */
   public importCSV() {
     const dialogRef = this.dialog.open(CsvUpdateUploaderComponent, {
       width: '325px',
@@ -249,9 +291,9 @@ export class TransactionGridComponent implements OnInit {
       this.gridApi.showLoadingOverlay();
 
       // finally, reload the data
-      promise.then((transactions)=> {
+      promise.then((transactionMap: Map<String, Transaction>)=> {
         console.log("Making call to backend")
-        this.dataService.updateTransactions(transactions).then(() => {
+        this.dataService.updateTransactions(transactionMap).then(() => {
           this.dataSource.data = this.dataService.getTransactions();
           this.gridApi.refreshCells();
           this.gridApi.hideOverlay();
@@ -260,20 +302,37 @@ export class TransactionGridComponent implements OnInit {
     });
   }
 
+  /**
+   * Button click handler, pops open the form.
+   */
   public addTransaction() {
     const formDialog = this.dialog.open(TransactionFormComponent);
   }
 
-  private handleTransactionChanges() {
-    this.dataSource.data = this.dataService.getTransactions();
-  }
-
+  /**
+   * Butoon click handler, clears all filters.
+   */
   public clearFilters() {
     this.accountByDateFilter = undefined;
     this.filterAccount = undefined;
     this.gridApi.onFilterChanged();
   }
 
+  // #endregion
+
+  // #region Observer Handler
+  /**
+   * Observer handler for transaction changes.
+   */
+  private handleTransactionChanges() {
+    this.dataSource.data = this.dataService.getTransactions();
+  }
+
+
+  /**
+   * 
+   * @param event Observer handler for a cell in the Summary tab being double clicked.
+   */
   private handleCellDoubleClickedInSummary(event: CellDoubleClickedEvent) {
     console.log(event);
     this.accountByDateFilter = event.data.account;
@@ -281,4 +340,5 @@ export class TransactionGridComponent implements OnInit {
     this.gridApi.onFilterChanged()
 
   }
+  // #endregion
 }

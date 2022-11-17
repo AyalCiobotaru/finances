@@ -11,3 +11,4 @@ INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Transportation")
 INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Catch-All");
 INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Interest");
 INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Misc.");
+INSERT INTO myServer.parent_category(id, name) VALUES (UUID(), "Loan");

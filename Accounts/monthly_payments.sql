@@ -7,10 +7,15 @@ INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(),
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Peacock", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Ring", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Instacart", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Tower FCU Car Loan", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Tower FCU RV Loan", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Costco", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
-INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Syd's Phone Bill", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Syds Insurance", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Phone Bill", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Spotify", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Verizon", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Amazon", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Apartment", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Car Payments", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Discover Student Loan", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Nelnet Loan", (SELECT id from myServer.parent_category pc where pc.name = "Monthly Payments"), "Paper", 0.0);

@@ -11,7 +11,8 @@
  */
 import * as BigNumber from 'bignumber.js'
 
-export interface TransactionDTO { 
+export interface TransactionDTO {
+    id?: string;
     description?: string;
     creditAccountId?: string;
     debitAccountId?: string;

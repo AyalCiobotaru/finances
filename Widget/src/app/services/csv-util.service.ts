@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Transaction, TransactionsService } from 'src/app/rest';
 import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
 import { TransactionFormComponent } from '../components/transaction-form-component/transaction-form.component';
 import { DataManagerService } from './data-manager.service';
@@ -12,7 +11,7 @@ export class CsvUtilService {
 
   constructor(private dataService: DataManagerService, private matDialogRef: MatDialog) { }
 
-  public processWorkbook(workbook : any, formValues: any): Promise<any> {
+  public processWorkbook(workbook : any, formValues: any): Promise<Map<String, TransactionDTO>> {
 
     // our data is in the first sheet
     var firstSheetName = workbook.SheetNames[0];
@@ -29,7 +28,7 @@ export class CsvUtilService {
 
     // start at the 2nd row - the first row are the headers
     var rowIndex = 2;
-    var transactions : Transaction[] = [];
+    var transactionsMap : Map<String, TransactionDTO> = new Map<String,TransactionDTO>();
 
     return new Promise((resolve: any) => {
       while (worksheet['E' + rowIndex]) {
@@ -51,7 +50,7 @@ export class CsvUtilService {
         let d: Date = new Date(row.date);
         row.date = d.toISOString();
         
-        let transaction : TransactionDTO = {};
+        let transactionDTO : TransactionDTO = {};
         try {
           // Create the id column for the dto
           row.creditAccountId = this.dataService.getAccounts().find(account => account.name?.toLowerCase() === row.creditAccountName.toLowerCase())?.id
@@ -62,8 +61,8 @@ export class CsvUtilService {
               data: row
             })
           } else {
-            Object.assign(transaction, row);   
-            transactions.push(transaction);
+            Object.assign(transactionDTO, row);   
+            transactionsMap.set("NEW-" + rowIndex, transactionDTO);
           }
 
         } catch (error : any) {
@@ -76,7 +75,7 @@ export class CsvUtilService {
         rowIndex++;
       }
       console.log("Resolving out of csv-util.servise")
-      resolve(transactions);
+      resolve(transactionsMap);
     })
   }
 }
