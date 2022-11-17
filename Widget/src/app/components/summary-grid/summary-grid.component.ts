@@ -177,9 +177,9 @@ export class SummaryGridComponent implements OnInit {
             if (params.data) {
               if (params.data.monthlyAmounts[month] < 0)
               {
-                return '$  (' + this.numberWithCommas((params.data.monthlyAmounts[month] as BigNumber.BigNumber).abs()) + ')'
+                return '$  (' + this.dataService.numberWithCommas((params.data.monthlyAmounts[month] as BigNumber.BigNumber).abs()) + ')'
               } else {
-                return '$  ' + this.numberWithCommas(params.data.monthlyAmounts[month]);
+                return '$  ' + this.dataService.numberWithCommas(params.data.monthlyAmounts[month]);
               }
             } else {
               return "";
@@ -203,14 +203,4 @@ export class SummaryGridComponent implements OnInit {
     this.gridApi = params.api;
     this.renderRowsToFit();
   }
-
-  /**
-   * Utility function to add commas to numbers
-   * @param number number to add commas
-   * @returns the number with commas every 3 digits
-   */
-  private numberWithCommas(number: BigNumber.BigNumber) {
-    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
 }

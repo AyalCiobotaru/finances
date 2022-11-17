@@ -104,7 +104,13 @@ export class DataManagerService {
      * @returns The accounts in the map.
      */
    public getAccounts(): Account[] {
-    return Array.from(this.accountMap.values());
+    return Array.from(this.accountMap.values()).sort((a: Account, b: Account) => {
+      if(a && a.name && b && b.name) {
+        return a.name.localeCompare(b.name);
+      } else {
+        return 0;
+      }
+    });
   }
 
   /**
@@ -129,6 +135,14 @@ export class DataManagerService {
      */
    public getSummaryList(): Map<string, BigNumber.BigNumber>[] {
     return this.summaryList;
+  }
+  /**
+   * Utility function to add commas to numbers
+   * @param number number to add commas
+   * @returns the number with commas every 3 digits
+   */
+  public numberWithCommas(number: BigNumber.BigNumber | Number) {
+    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
    
 }

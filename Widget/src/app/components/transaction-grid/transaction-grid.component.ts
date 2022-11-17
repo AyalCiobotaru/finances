@@ -4,13 +4,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { Account, Transaction,  } from 'src/app/rest';
 import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
 import { CsvUtilService } from '../../services/csv-util.service';
-import { CellDoubleClickedEvent, ColDef, FirstDataRenderedEvent, GridOptions,  } from 'ag-grid-community';
+import { CellDoubleClickedEvent, ColDef, FirstDataRenderedEvent, GridOptions, KeyCreatorParams, ValueGetterParams, ValueSetterParams,  } from 'ag-grid-community';
 import { DataManagerService } from '../../services/data-manager.service';
 import { TransactionFormComponent } from '../transaction-form-component/transaction-form.component';
 import { Observable } from 'rxjs';
 import { FilterUtilService } from 'src/app/services/filter-util.service';
 import { FormControl } from '@angular/forms';
 import { MessagingService } from 'src/app/services/messaging.service';
+import { DateEditorComponent } from './date-editor/date-editor.component';
 
 @Component({
   selector: 'app-transaction-grid',
@@ -72,7 +73,6 @@ export class TransactionGridComponent implements OnInit {
           }
         }
       })
-
       this.filteredAccounts = this.filterService.filterForm(this.filterFormControl, this.dataService.getAccounts(), "")
       this.setupGrid();
     })
@@ -81,32 +81,47 @@ export class TransactionGridComponent implements OnInit {
   gridOptions: GridOptions = {
     isExternalFilterPresent: this.isExternalFilterPresent.bind(this),
     doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
-    // onCellEditingStopped: this.CellEdittingStopped.bind(this) 
+    onCellValueChanged: this.cellValueChanged.bind(this),
   }
 
   public defaultColDef: ColDef = {
     resizable: true,
     sortable: true,
+    editable: true,
     filter: 'agSetColumnFilter',
     minWidth: 150
   }
 
   private setupGrid() {
-
     let colDefs: ColDef[] = [
       {
         headerName: 'Debit',
-        field: 'debitAccount',
-        valueFormatter: this.getAccountNameById,
-        valueGetter: (params) => {
-          return params.data.debitAccount.id;
+        valueGetter: (params: ValueGetterParams) => {
+          return params.data.debitAccount.name;
         },
-        valueParser: (params) => {
-          return this.getAccountNameById(params);
+        valueSetter: (params: ValueSetterParams) => {
+          let newAccount = params.newValue;
+          if (!params.data.debitAccount) {
+            throw Error("Missing Account");
+          }
+          let valueChanged = params.data.debitAccount.id !== newAccount.id;
+          if (valueChanged) {
+            params.data.debitAccount = newAccount; 
+          }
+          return valueChanged;
         },
         filterParams: {
           accounts: this.dataService.getAccounts(),
           valueFormatter: this.getAccountNameById
+        },
+        cellEditorPopup: true,
+        cellEditor: 'agRichSelectCellEditor',
+        cellEditorParams: {
+          values: this.dataService.getAccounts(),
+          formatValue: (value: any) => { return (typeof value === 'string') ? value : value.name },
+        },
+        keyCreator: (params: KeyCreatorParams) => {
+          return params.value.name;
         }
       },
       {
@@ -115,6 +130,7 @@ export class TransactionGridComponent implements OnInit {
         valueFormatter: (params) => {
           return new Date(params.value).toLocaleDateString();
         },
+        cellEditor: DateEditorComponent,
         sort: 'desc'
       },
       {
@@ -123,31 +139,58 @@ export class TransactionGridComponent implements OnInit {
       },
       {
         headerName: 'Credit',
-        field: 'creditAccount',
-        valueFormatter: this.getAccountNameById,
-        valueGetter: (params) => {
-          return params.data.creditAccount.id;
+        valueGetter: (params: ValueGetterParams) => {
+          return params.data.creditAccount.name;
         },
-        valueParser: (params) => {
-          return this.getAccountNameById(params);
+        valueSetter: (params: ValueSetterParams) => {
+          let newAccount = params.newValue;
+          if (!params.data.creditAccount) {
+            throw Error("Missing Account");
+          }
+          let valueChanged = params.data.creditAccount.id !== newAccount.id;
+          if (valueChanged) {
+            params.data.creditAccount = newAccount; 
+          }
+          return valueChanged;
         },
         filterParams: {
           accounts: this.dataService.getAccounts(),
           valueFormatter: this.getAccountNameById
+        },
+        cellEditorPopup: true,
+        cellEditor: 'agRichSelectCellEditor',
+        cellEditorParams: {
+          values: this.dataService.getAccounts().sort((a: Account, b: Account) => {
+            if(a && a.name && b && b.name) {
+              return a.name.localeCompare(b.name);
+            } else {
+              return 0;
+            }
+          }),
+          formatValue: (value: any) => { return (typeof value === 'string') ? value : value.name },
+        },
+        keyCreator: (params: KeyCreatorParams) => {
+          return params.value.name;
         }
       },
       {
         headerName: 'Amount',
         field: 'amount',
-        valueFormatter: params => "$  " + params.value.toFixed(2)
+        valueFormatter: params => {
+          return "$  " + (typeof params.value === "string" ? this.dataService.numberWithCommas(Number(params.value)) :this.dataService.numberWithCommas(params.value));
+        }
       }
     ];
-
     this.columnDefs = colDefs;
   }
 
+  public cellValueChanged(params: any) {
+    console.log(params);
+  }
+
   private getAccountNameById(params: any) {
-    return params.colDef.filterParams.accounts.find((account: Account) => account.id === params.value).name;
+    let val = params.value ? params.value : params.newValue;
+    return params.colDef.filterParams.accounts.find((account: Account) => account.id === val).name;
   }
 
   public isExternalFilterPresent() : boolean {
@@ -219,7 +262,6 @@ export class TransactionGridComponent implements OnInit {
 
   public addTransaction() {
     const formDialog = this.dialog.open(TransactionFormComponent);
-    
   }
 
   private handleTransactionChanges() {
