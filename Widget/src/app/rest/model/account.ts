@@ -20,5 +20,6 @@ export interface Account {
     balance?: number;
     amount?: number;
     parentCategory?: ParentCategory;
+    rollover?: number;
 }
 

@@ -5,4 +5,5 @@ export interface SummaryRow {
     account?: Account,
     monthlyAmounts: BigNumber.BigNumber[]
     total: BigNumber.BigNumber,
+    rollOver: BigNumber.BigNumber
 }

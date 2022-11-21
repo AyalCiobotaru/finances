@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IHeaderAngularComp } from 'ag-grid-angular';
 import { IHeaderParams } from 'ag-grid-community';
+import { MessagingService } from 'src/app/services/messaging.service';
 
 @Component({
   selector: 'app-checkmark-header',
@@ -11,9 +12,9 @@ export class CheckmarkHeaderComponent implements IHeaderAngularComp {
 
   public params!: IHeaderParams;
 
-  public checked: boolean = false;
+  public checked: boolean = true;
 
-  constructor() { }
+  constructor(private messagingService: MessagingService) { }
 
   agInit(params: IHeaderParams<any>): void {
     this.params=params;
@@ -21,6 +22,10 @@ export class CheckmarkHeaderComponent implements IHeaderAngularComp {
 
   refresh(params: IHeaderParams<any>): boolean {
     return false;
+  }
+
+  onChange(event: Boolean) {
+    this.messagingService.addRollover(event);
   }
   
 }

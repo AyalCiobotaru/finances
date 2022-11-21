@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import {ColDef, GridOptions, RowGroupingDisplayType } from 'ag-grid-community';
+import {ColDef, GridApi, GridOptions, RowGroupingDisplayType } from 'ag-grid-community';
 import * as BigNumber from 'bignumber.js';
 import { SummaryRow } from 'src/app/models/summaryRow';
-import { Account } from 'src/app/rest';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { MessagingService } from 'src/app/services/messaging.service';
+import { SummaryDataService } from 'src/app/services/summary-data.service';
 import { CheckmarkHeaderComponent } from './checkmark-header/checkmark-header.component';
 
 @Component({
@@ -21,17 +21,12 @@ export class SummaryGridComponent implements OnInit {
   dataSource = new MatTableDataSource<SummaryRow>();
 
   /** The grid Api */
-  public gridApi: any
+  public gridApi!: GridApi
 
   /**
   * Column Definitions
   */
   public columnDefs: ColDef[] = [];
-
-  /**
-  * Stores the data while aggregating before inserting it into the grid
-  */
-  private rowData : Map<string, SummaryRow> = new Map<string, SummaryRow>();
 
   /**
    * List of months to use for summary
@@ -48,13 +43,14 @@ export class SummaryGridComponent implements OnInit {
    */
   public groupDefaultExpanded = 1;
   
-  constructor(private dataService: DataManagerService, private messagingService: MessagingService) { }
+  constructor(private dataService: DataManagerService, private messagingService: MessagingService, private summaryService: SummaryDataService) { }
 
   ngOnInit(): void {
     this.dataService.instantiateAccountData().then(() => {
       this.setupDataSource();
       this.setupGrid();
     })
+    this.messagingService.getAddRolloverAsObservable().subscribe(event => this.handleAddRollOver(event))
   }
 
   public defaultColDef: ColDef = {
@@ -65,64 +61,14 @@ export class SummaryGridComponent implements OnInit {
   }
 
   gridOptions: GridOptions = {
-    onCellDoubleClicked: (params) => this.messagingService.cellDoubleClicked(params)
+    onCellDoubleClicked: (params) => this.messagingService.cellDoubleClicked(params),
+    onFirstDataRendered: (params) => this.onFirstDataRendered(params)
+
   }
 
-  /**
-   * Grab the transactions and create the Summary Row Data
-   */
-  private setupDataSource() {
-    this.dataService.instantiateTransactionData().then(() => {
-      let accounts: Account[] = this.dataService.getAccounts();
-      for (let account of accounts) {
-        if (account.parentCategory?.name !== "Catch-All")
-        {
-          if (account.name) {
-            let summaryRow: SummaryRow = {
-              account: account,
-              monthlyAmounts: new Array<BigNumber.BigNumber>(12),
-              total: new BigNumber.BigNumber(0)
-            }
-  
-            // initialize bigNumber array
-            for (let index = 0; index < 12; index++) {
-              summaryRow.monthlyAmounts[index] = new BigNumber.BigNumber(0);
-            }
-            this.rowData.set(account.name, summaryRow);
-  
-          } else {
-            console.log("Missing account name when attempting to create summaryRow");
-            console.log(account);
-          }
-        }
-      }
-
-      let summaryList = this.dataService.getSummaryList();
-      // for every map (Jan - Dec), add the amount to the current account amount
-      for (let index = 0; index < summaryList.length; index++) {
-
-        const summaryMap = summaryList[index];
-        for (let summary of summaryMap) {
-          // Gets the summaryRow based off the account name
-          let summaryRow = this.rowData.get(summary[0]);
-          if (summaryRow) {
-
-            // Make sure the summary row isn't undefined or null
-            if (!summaryRow.monthlyAmounts[index]) {
-              summaryRow.monthlyAmounts[index] = new BigNumber.BigNumber(0);
-            }
-            summaryRow.monthlyAmounts[index] = summary[1];
-            if (!summaryRow.total) {
-              summaryRow.total = new BigNumber.BigNumber(0);
-            }
-            summaryRow.total = summaryRow.total.plus(summary[1]);
-          }
-        }
-      }
-      let data = Array.from(this.rowData.values());
-      this.dataSource.data = Array.from(data);
-    })
-
+  public onGridReady(params : any) {
+    this.gridApi = params.api;
+    this.renderRowsToFit();
   }
 
   public onFirstDataRendered(params: any) {
@@ -133,11 +79,24 @@ export class SummaryGridComponent implements OnInit {
     this.gridApi.sizeColumnsToFit();
   }
 
+  private handleAddRollOver(bool: Boolean) {
+    this.summaryService.adjustTotals(bool);
+    this.dataSource.data = this.summaryService.getRowData();
+  }
+  
+  /**
+   * Grab the transactions and create the Summary Row Data
+   */
+  private setupDataSource() {
+    this.summaryService.aggregateSummaryData().then((response: SummaryRow[]) => {
+      this.dataSource.data = response;
+    })
+  }
+
   /**
    * Set up the columns for the grid
    */
   private setupGrid() {
-
     let colDefs: ColDef[] = [
       {
         headerName: 'Type',
@@ -172,7 +131,7 @@ export class SummaryGridComponent implements OnInit {
         }
       }
     ];
-
+  
     // Create a column for each month
     for (let month = 0; month < this.months.length; month++) {
       colDefs.push(
@@ -210,10 +169,5 @@ export class SummaryGridComponent implements OnInit {
     );
 
     this.columnDefs = colDefs;
-  }
-
-  onGridReady(params : any) {
-    this.gridApi = params.api;
-    this.renderRowsToFit();
   }
 }
