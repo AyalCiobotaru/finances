@@ -80,9 +80,9 @@ export class DataManagerService {
     })
   } 
 
-  public updateTransactions(transactionsMap: Map<String, TransactionDTO>) {
+  public updateTransactions(transactions:TransactionDTO[]) {
     return new Promise<void>((resolve) => {
-      this.transactionService.updateTransactions(transactionsMap).subscribe((updatedTransactions: Transaction[]) => {
+      this.transactionService.updateTransactions(transactions).subscribe((updatedTransactions: Transaction[]) => {
         updatedTransactions.forEach((transaction: Transaction) => {
           if (transaction.id) {
             this.transactionMap.set(transaction.id, transaction);

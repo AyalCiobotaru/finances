@@ -291,9 +291,9 @@ export class TransactionGridComponent implements OnInit {
       this.gridApi.showLoadingOverlay();
 
       // finally, reload the data
-      promise.then((transactionMap: Map<String, Transaction>)=> {
+      promise.then(transactions => {
         console.log("Making call to backend")
-        this.dataService.updateTransactions(transactionMap).then(() => {
+        this.dataService.updateTransactions(transactions).then(() => {
           this.dataSource.data = this.dataService.getTransactions();
           this.gridApi.refreshCells();
           this.gridApi.hideOverlay();

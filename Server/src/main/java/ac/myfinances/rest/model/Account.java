@@ -36,6 +36,9 @@ public class Account  implements Serializable {
   @JsonProperty("balance")
   private BigDecimal balance;
 
+  @JsonProperty("rollover")
+  private BigDecimal rollover;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "parent_id")
   @JsonProperty("parentCategory")
@@ -124,6 +127,27 @@ public class Account  implements Serializable {
     this.balance = balance;
   }
 
+  public Account rollover(BigDecimal rollover) {
+    this.rollover = rollover;
+    return this;
+  }
+
+
+  /**
+   * Get balance
+   * @return balance
+   */
+  @ApiModelProperty(value = "")
+
+
+  public BigDecimal getRollover() {
+    return this.rollover;
+  }
+
+  public void setRollover(BigDecimal rollover) {
+    this.rollover = rollover;
+  }
+
   public Account parentCategory(ParentCategory parentCategory) {
     this.parentCategory = parentCategory;
     return this;
@@ -159,12 +183,13 @@ public class Account  implements Serializable {
         Objects.equals(this.name, account.name) &&
         Objects.equals(this.type, account.type) &&
         Objects.equals(this.balance, account.balance) &&
+        Objects.equals(this.rollover, account.rollover) &&
         Objects.equals(this.parentCategory, account.parentCategory);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, type, balance, parentCategory);
+    return Objects.hash(id, name, type, balance, rollover, parentCategory);
   }
 
   @Override
@@ -176,6 +201,7 @@ public class Account  implements Serializable {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
+    sb.append("    rollover: ").append(toIndentedString(rollover)).append("\n");
     sb.append("    parentCategory: ").append(toIndentedString(parentCategory)).append("\n");
     sb.append("}");
     return sb.toString();

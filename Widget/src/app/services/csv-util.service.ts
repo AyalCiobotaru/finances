@@ -11,7 +11,7 @@ export class CsvUtilService {
 
   constructor(private dataService: DataManagerService, private matDialogRef: MatDialog) { }
 
-  public processWorkbook(workbook : any, formValues: any): Promise<Map<String, TransactionDTO>> {
+  public processWorkbook(workbook : any, formValues: any): Promise<TransactionDTO[]> {
 
     // our data is in the first sheet
     var firstSheetName = workbook.SheetNames[0];
@@ -28,7 +28,7 @@ export class CsvUtilService {
 
     // start at the 2nd row - the first row are the headers
     var rowIndex = 2;
-    var transactionsMap : Map<String, TransactionDTO> = new Map<String,TransactionDTO>();
+    var transactions : TransactionDTO[] = []
 
     return new Promise((resolve: any) => {
       while (worksheet['E' + rowIndex]) {
@@ -62,7 +62,7 @@ export class CsvUtilService {
             })
           } else {
             Object.assign(transactionDTO, row);   
-            transactionsMap.set("NEW-" + rowIndex, transactionDTO);
+            transactions.push(transactionDTO)
           }
 
         } catch (error : any) {
@@ -75,7 +75,7 @@ export class CsvUtilService {
         rowIndex++;
       }
       console.log("Resolving out of csv-util.servise")
-      resolve(transactionsMap);
+      resolve(transactions);
     })
   }
 }

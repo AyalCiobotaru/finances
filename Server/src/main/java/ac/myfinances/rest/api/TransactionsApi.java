@@ -72,7 +72,7 @@ public interface TransactionsApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<List<Transaction>> updateOrAddTransactions(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody Map<String, TransactionDTO> transactionDTO) {
+    default ResponseEntity<List<Transaction>> updateOrAddTransactions(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody List<TransactionDTO> transactionDTO) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

@@ -6,6 +6,7 @@ import { SummaryRow } from 'src/app/models/summaryRow';
 import { Account } from 'src/app/rest';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { MessagingService } from 'src/app/services/messaging.service';
+import { CheckmarkHeaderComponent } from './checkmark-header/checkmark-header.component';
 
 @Component({
   selector: 'app-summary-grid',
@@ -73,7 +74,7 @@ export class SummaryGridComponent implements OnInit {
   private setupDataSource() {
     this.dataService.instantiateTransactionData().then(() => {
       let accounts: Account[] = this.dataService.getAccounts();
-      for (var account of accounts) {
+      for (let account of accounts) {
         if (account.parentCategory?.name !== "Catch-All")
         {
           if (account.name) {
@@ -101,7 +102,7 @@ export class SummaryGridComponent implements OnInit {
       for (let index = 0; index < summaryList.length; index++) {
 
         const summaryMap = summaryList[index];
-        for (var summary of summaryMap) {
+        for (let summary of summaryMap) {
           // Gets the summaryRow based off the account name
           let summaryRow = this.rowData.get(summary[0]);
           if (summaryRow) {
@@ -111,6 +112,10 @@ export class SummaryGridComponent implements OnInit {
               summaryRow.monthlyAmounts[index] = new BigNumber.BigNumber(0);
             }
             summaryRow.monthlyAmounts[index] = summary[1];
+            if (!summaryRow.total) {
+              summaryRow.total = new BigNumber.BigNumber(0);
+            }
+            summaryRow.total = summaryRow.total.plus(summary[1]);
           }
         }
       }
@@ -192,7 +197,15 @@ export class SummaryGridComponent implements OnInit {
     colDefs.push(
       {
         headerName: 'Total',
-        field: 'total'
+        headerComponent: CheckmarkHeaderComponent,
+        field: 'total',
+        valueFormatter: (params) => {
+          if (params.value < 0) {
+            return `$  (` + this.dataService.numberWithCommas(params.value) + ')'
+          } else {
+            return '$  ' + this.dataService.numberWithCommas(params.value)
+          }
+        }
       }
     );
 

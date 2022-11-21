@@ -9,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class TransactionController implements TransactionsApi {
@@ -30,11 +28,17 @@ public class TransactionController implements TransactionsApi {
     }
 
     @Override
-    public ResponseEntity<List<Transaction>> updateOrAddTransactions(Map<String, TransactionDTO> transactions) {
+    public ResponseEntity<List<Transaction>> updateOrAddTransactions(List<TransactionDTO> transactions) {
         if (transactions == null) {
             return ResponseEntity.badRequest().build();
         }
-        List<Transaction> updatedTransactions = this.transactionService.updateOrAddLogic(transactions);
+        HashMap<String, TransactionDTO> transactionMap = new HashMap<>();
+        AtomicInteger newCounter = new AtomicInteger(1);
+        transactions.forEach(t -> {
+            transactionMap.put((t.getId() != null ? t.getId(): "NEW" + newCounter), t);
+            newCounter.getAndIncrement();
+        });
+        List<Transaction> updatedTransactions = this.transactionService.updateOrAddLogic(transactionMap);
 
         return ResponseEntity.ok(updatedTransactions);
     }

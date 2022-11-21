@@ -139,10 +139,10 @@ export class TransactionsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateTransactions(transactionDTO: Map<String, TransactionDTO>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Transaction>>;
-    public updateTransactions(transactionDTO: Map<String, TransactionDTO>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Transaction>>>;
-    public updateTransactions(transactionDTO: Map<String, TransactionDTO>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Transaction>>>;
-    public updateTransactions(transactionDTO: Map<String, TransactionDTO>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public updateTransactions(transactionDTO: TransactionDTO[], observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Transaction>>;
+    public updateTransactions(transactionDTO: TransactionDTO[], observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Transaction>>>;
+    public updateTransactions(transactionDTO: TransactionDTO[], observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Transaction>>>;
+    public updateTransactions(transactionDTO: TransactionDTO[], observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (transactionDTO === null || transactionDTO === undefined) {
             throw new Error('Required parameter transactionDTO was null or undefined when calling updateTransactions.');
         }

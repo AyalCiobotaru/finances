@@ -56,9 +56,10 @@ export class TransactionFormComponent implements OnInit {
       // Create the id column for the dto
       transaction.creditAccountId = this.transactionForm.value.creditAccount.id;
       transaction.debitAccountId = this.transactionForm.value.debitAccount.id
-      let map = new Map<String, TransactionDTO>();
-      map.set("NEW", transaction)
-      this.dataService.updateTransactions(map).then(() => {
+
+      let array : TransactionDTO[] = []
+      array.push(transaction)
+      this.dataService.updateTransactions(array).then(() => {
         console.log("updated transaction");
       }, (error: any) => {
         console.log("Failed in updating or creating a transaction")
