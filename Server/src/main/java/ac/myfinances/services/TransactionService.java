@@ -27,44 +27,43 @@ public class TransactionService {
      * @param transactions Map of id to transaction
      * @return updated transactions
      */
-    public List<Transaction> updateOrAddLogic(Map<String,TransactionDTO> transactions) {
-        List<TransactionDTO> newTransactionDTOs = new ArrayList<>();
+    public List<Transaction> updateOrAddLogic(List<TransactionDTO> transactions) {
+//        List<TransactionDTO> newTransactionDTOs = new ArrayList<>();
         List<Transaction> newTransactions = new ArrayList<>();
-        List<Transaction> savedTransactions = new ArrayList<>();
-        List<Transaction> updatedTransactions = new ArrayList<>();
-
-        HashMap<String, TransactionDTO> transactionToUpdate = new HashMap<>();
-
-        // Separate transactionDTO into new transactions and those to update
-        transactions.forEach((key, value) -> {
-            if (key.contains("NEW")) {
-                newTransactionDTOs.add(value);
-            } else {
-                transactionToUpdate.put(key, value);
-            }
-        });
+//        List<Transaction> savedTransactions = new ArrayList<>();
+//        List<Transaction> updatedTransactions = new ArrayList<>();
+//
+//        HashMap<String, TransactionDTO> transactionToUpdate = new HashMap<>();
+//
+//        // Separate transactionDTO into new transactions and those to update
+//        transactions.forEach((key, value) -> {
+//            if (key.contains("NEW")) {
+//                newTransactionDTOs.add(value);
+//            } else {
+//                transactionToUpdate.put(key, value);
+//            }
+//        });
 
         // If we have new transactions, verify the account, handle account changes and save them
-        if (newTransactionDTOs.size() > 0) {
-            newTransactionDTOs.forEach(transactionDTO -> {
+//        if (newTransactionDTOs.size() > 0) {
+            transactions.forEach(transactionDTO -> {
                 Transaction newTransaction = this.verifyAccountId(transactionDTO);
                 this.handleAccountChanges(newTransaction);
                 newTransactions.add(newTransaction);
             });
-            savedTransactions = this.transactionRepository.saveAll(newTransactions);
-        }
-
-        // If we have transactions to update, revert the old amounts for accounts, handle the new ones and save them
-        if (transactionToUpdate.size() > 0) {
-            this.revertOldTransactionAccounts(transactionToUpdate);
-            List<Transaction> dbTransactions = this.updateTransactions(transactionToUpdate);
-            this.handleAccountChanges(dbTransactions);
-            updatedTransactions = this.transactionRepository.saveAll(dbTransactions);
-        }
+            List<Transaction> savedTransactions = this.transactionRepository.saveAll(newTransactions);
+//        }
+//
+//        // If we have transactions to update, revert the old amounts for accounts, handle the new ones and save them
+//        if (transactionToUpdate.size() > 0) {
+//            this.revertOldTransactionAccounts(transactionToUpdate);
+//            List<Transaction> dbTransactions = this.updateTransactions(transactionToUpdate);
+//            this.handleAccountChanges(dbTransactions);
+//            updatedTransactions = this.transactionRepository.saveAll(dbTransactions);
+//        }
 
         // combine the two lists and return
-        updatedTransactions.addAll(savedTransactions);
-        return updatedTransactions;
+        return savedTransactions;
     }
 
     /**

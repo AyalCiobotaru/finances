@@ -8,6 +8,7 @@ package ac.myfinances.rest.api;
 import java.util.List;
 import ac.myfinances.rest.model.Transaction;
 import ac.myfinances.rest.model.TransactionDTO;
+import ac.myfinances.rest.model.UpdateTransactionBody;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,6 +57,35 @@ public interface TransactionsApi {
 
     }
 
+    /**
+     * POST /transactions : Create or Update one or more transaction
+     *
+     * @param transactionDTO Transactions to create or update (required)
+     * @return successful operation (status code 200)
+     */
+    @ApiOperation(value = "Create or Update one or more transaction", nickname = "updateTransactions", notes = "", response = Transaction.class, responseContainer = "List", tags={ "Transactions", })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Transaction.class, responseContainer = "List") })
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/transactions/add",
+            produces = { "application/json" },
+            consumes = { "application/json" }
+    )
+    default ResponseEntity<List<Transaction>> addTransactions(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody List<TransactionDTO> transactionDTO) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"date\" : \"2000-01-23\", \"amount\" : 0.8008282, \"creditAccount\" : { \"balance\" : 0.8008282, \"name\" : \"name\", \"parentCategory\" : \"parentCategory\", \"id\" : \"id\", \"type\" : \"type\" }, \"debitAccount\" : { \"balance\" : 0.8008282, \"name\" : \"name\", \"parentCategory\" : \"parentCategory\", \"id\" : \"id\", \"type\" : \"type\" }, \"description\" : \"description\", \"id\" : \"id\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * POST /transactions : Create or Update one or more transaction
@@ -68,11 +98,11 @@ public interface TransactionsApi {
         @ApiResponse(code = 200, message = "successful operation", response = Transaction.class, responseContainer = "List") })
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/transactions",
+        value = "/transactions/update",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<List<Transaction>> updateOrAddTransactions(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody List<TransactionDTO> transactionDTO) {
+    default ResponseEntity<Transaction> updateTransaction(@ApiParam(value = "Transactions to create or update", required = true) @Valid @RequestBody UpdateTransactionBody updateTransactionBody) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {

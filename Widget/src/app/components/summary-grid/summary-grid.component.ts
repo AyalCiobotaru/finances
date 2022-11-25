@@ -3,6 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import {ColDef, GridApi, GridOptions, RowGroupingDisplayType } from 'ag-grid-community';
 import * as BigNumber from 'bignumber.js';
 import { SummaryRow } from 'src/app/models/summaryRow';
+import { Transaction } from 'src/app/rest';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { MessagingService } from 'src/app/services/messaging.service';
 import { SummaryDataService } from 'src/app/services/summary-data.service';
@@ -51,6 +52,7 @@ export class SummaryGridComponent implements OnInit {
       this.setupGrid();
     })
     this.messagingService.getAddRolloverAsObservable().subscribe(event => this.handleAddRollOver(event))
+    this.messagingService.getAccountMonthlyTotalChanges().subscribe(transactions => this.handleAccountMonthlyTotalChanges(transactions))
   }
 
   public defaultColDef: ColDef = {
@@ -62,7 +64,8 @@ export class SummaryGridComponent implements OnInit {
 
   gridOptions: GridOptions = {
     onCellDoubleClicked: (params) => this.messagingService.cellDoubleClicked(params),
-    onFirstDataRendered: (params) => this.onFirstDataRendered(params)
+    onFirstDataRendered: (params) => this.onFirstDataRendered(params),
+    getRowId: params => params.data.id
 
   }
 
@@ -79,9 +82,22 @@ export class SummaryGridComponent implements OnInit {
     this.gridApi.sizeColumnsToFit();
   }
 
+  private handleAccountMonthlyTotalChanges(transactions: Transaction[]) {
+    transactions.forEach(transaction => {
+      if (typeof transaction.amount == "number") {
+        transaction.amount = BigNumber.BigNumber(transaction.amount);
+      }
+      this.summaryService.adjustMonthlyAmounts(transaction.amount!, new Date(transaction.date!).getMonth(), transaction.creditAccount?.name!);
+      this.summaryService.adjustMonthlyAmounts(transaction.amount!.negated(), new Date(transaction.date!).getMonth(), transaction.debitAccount?.name!);
+    })
+    this.dataSource.data = this.summaryService.getRowData();
+    this.gridApi.refreshCells();
+  }
+
   private handleAddRollOver(bool: Boolean) {
     this.summaryService.adjustTotals(bool);
     this.dataSource.data = this.summaryService.getRowData();
+    this.gridApi.refreshCells();
   }
   
   /**

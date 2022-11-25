@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ValueCache } from 'ag-grid-community';
 import * as BigNumber from 'bignumber.js';
 import { SummaryRow } from '../models/summaryRow';
 import { Account } from '../rest';
@@ -28,6 +29,7 @@ export class SummaryDataService {
         {
           if (account.name) {
             let summaryRow: SummaryRow = {
+              id: account.id,
               account: account,
               monthlyAmounts: new Array<BigNumber.BigNumber>(12),
               // Checkbox in header defaults to true, add the rollover amount initially
@@ -82,7 +84,7 @@ export class SummaryDataService {
    */
   public adjustTotals(addRollover: Boolean) {
     this.rowData.forEach((value, key) => {
-      if (key === "Actual") {
+      if (value.account?.type === "Actual") {
         if (addRollover) {
           value.total = value.total.plus(value.rollOver);
         } else {
@@ -94,6 +96,22 @@ export class SummaryDataService {
 
   public getRowData() : SummaryRow[] {
     return Array.from(this.rowData.values());
+  }
+
+  public adjustMonthlyAmounts(amount: BigNumber.BigNumber, month: number, account: string) {
+    let row = this.rowData.get(account);
+    
+    console.log("Editing Row:")
+    console.log(row);
+    if (row) {
+      console.log("\nEditing month");
+      console.log(row.monthlyAmounts[month]);
+      console.log("\nAmount");
+      console.log(amount);
+      row.total = row.total.plus(amount);
+      row.monthlyAmounts[month] = row?.monthlyAmounts[month].plus(amount);
+    }
+    this.rowData.set(account, row!);
   }
 }
     

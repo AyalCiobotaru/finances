@@ -30,10 +30,10 @@ export class DataManagerService {
     return new Promise<void>((resolve, reject) => {
       this.accountService.getAllAccounts().subscribe((accounts: Account[]) => {
         accounts.forEach((account: Account) => {
-          if (account.id) {
-            this.accountMap.set(account.id, account);
+          if (account.name) {
+            this.accountMap.set(account.name, account);
           } else {
-            console.log("Error, account without id", account);
+            console.log("Error, account without name", account);
             reject();
           }
         })
@@ -81,7 +81,7 @@ export class DataManagerService {
   } 
 
   public updateTransactions(transactions:TransactionDTO[]) {
-    return new Promise<void>((resolve) => {
+    return new Promise<Transaction[]>((resolve) => {
       this.transactionService.updateTransactions(transactions).subscribe((updatedTransactions: Transaction[]) => {
         updatedTransactions.forEach((transaction: Transaction) => {
           if (transaction.id) {
@@ -91,7 +91,7 @@ export class DataManagerService {
           }
         })
         this.messagingService.transactionsChanged();
-        resolve()
+        resolve(updatedTransactions)
       }, (error: any) => {
         console.log("Failed to update transaction")
         console.log(error);

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
-import { Account, Transaction,  } from 'src/app/rest';
+import { Account, Transaction, TransactionDTO,  } from 'src/app/rest';
 import { CsvUpdateUploaderComponent } from '../csv-update-uploader/csv-update-uploader.component';
 import { CsvUtilService } from '../../services/csv-util.service';
-import { CellDoubleClickedEvent, ColDef, FirstDataRenderedEvent, GridOptions, KeyCreatorParams, ValueGetterParams, ValueSetterParams,  } from 'ag-grid-community';
+import { CellDoubleClickedEvent, CellValueChangedEvent, ColDef, FirstDataRenderedEvent, GridOptions, KeyCreatorParams, ValueGetterParams, ValueSetterParams,  } from 'ag-grid-community';
 import { DataManagerService } from '../../services/data-manager.service';
 import { TransactionFormComponent } from '../transaction-form-component/transaction-form.component';
 import { Observable } from 'rxjs';
@@ -12,6 +12,7 @@ import { FilterUtilService } from 'src/app/services/filter-util.service';
 import { FormControl } from '@angular/forms';
 import { MessagingService } from 'src/app/services/messaging.service';
 import { DateEditorComponent } from './date-editor/date-editor.component';
+import * as BigNumber from 'bignumber.js';
 
 @Component({
   selector: 'app-transaction-grid',
@@ -109,6 +110,7 @@ export class TransactionGridComponent implements OnInit {
   private setupGrid() {
     let colDefs: ColDef[] = [
       {
+        colId: "0",
         headerName: 'Debit',
         valueGetter: (params: ValueGetterParams) => {
           return params.data.debitAccount.name;
@@ -139,6 +141,7 @@ export class TransactionGridComponent implements OnInit {
         }
       },
       {
+        colId: "1",
         headerName: 'Date',
         field: 'date',
         valueFormatter: (params) => {
@@ -148,10 +151,12 @@ export class TransactionGridComponent implements OnInit {
         sort: 'desc'
       },
       {
+        colId: "2",
         headerName: 'Description',
         field: 'description',
       },
       {
+        colId: "3",
         headerName: 'Credit',
         valueGetter: (params: ValueGetterParams) => {
           return params.data.creditAccount.name;
@@ -188,6 +193,7 @@ export class TransactionGridComponent implements OnInit {
         }
       },
       {
+        colId: "4",
         headerName: 'Amount',
         field: 'amount',
         valueFormatter: params => {
@@ -233,8 +239,56 @@ export class TransactionGridComponent implements OnInit {
   * Event handler for when a value has changed in a cell.
   * @param params CellValueChangedParams
   */
-  public cellValueChanged(params: any) {
+  public cellValueChanged(params: CellValueChangedEvent) {
+    // Need to do the inverse transaction to fix the totals
+    let oldTransaction: Transaction = {};
+    let transactionDTO: TransactionDTO = {};
+    let descriptionChange = false;
+    Object.assign(oldTransaction, params.data);
+    Object.assign(transactionDTO, params.data);
+    transactionDTO.creditAccountId = params.data.creditAccount.id;
+    transactionDTO.debitAccountId = params.data.debitAccount.id;
+
+    switch (params.column.getColId()) {
+      case "0":
+        oldTransaction.debitAccount = this.dataService.getAccountMap().get(params.oldValue);
+        break;
+      case "1":
+        oldTransaction.date = params.oldValue;
+        transactionDTO.date = new Date(params.newValue).toISOString();
+        break;
+      case "2":
+        oldTransaction.description = params.oldValue;
+        descriptionChange = true;
+        break;
+      case "3":
+        oldTransaction.creditAccount = this.dataService.getAccountMap().get(params.oldValue);
+        break;
+      case "4":
+        oldTransaction.amount = BigNumber.BigNumber(params.oldValue);
+        transactionDTO.amount = BigNumber.BigNumber(params.newValue);
+        break;
+
+    }
+    if (!descriptionChange) {
+      // Switch the accounts around to undo the transaction
+      let tempAccount = oldTransaction.creditAccount
+      oldTransaction.creditAccount = oldTransaction.debitAccount
+      oldTransaction.debitAccount = tempAccount;
+      
+      this.messagingService.accountMonthlyTotalChanges([oldTransaction]);
+    }
+
+    console.log("Built old Transaction");
+    console.log(oldTransaction)
+    console.log("\nOnCellValueChanged params")
     console.log(params);
+
+    this.dataService.updateTransactions([transactionDTO]).then(transactions => {
+      console.log("\nUpdated Transaction")
+      console.log(transactions[0])
+      this.messagingService.accountMonthlyTotalChanges(transactions);
+    });
   }
 
   /**
@@ -327,7 +381,6 @@ export class TransactionGridComponent implements OnInit {
   private handleTransactionChanges() {
     this.dataSource.data = this.dataService.getTransactions();
   }
-
 
   /**
    * 

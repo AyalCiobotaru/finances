@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CellDoubleClickedEvent } from 'ag-grid-community';
 import { Observable, Subject } from 'rxjs';
+import { Transaction } from '../rest';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +28,14 @@ export class MessagingService {
    */
   private addRolloverSubject: Subject<Boolean>;
 
+  private accountMonthlyTotalSubject: Subject<Transaction[]>
+
   constructor() {
     this.transactionChanges = new Subject<void>();
     this.cellDoubleClickedSubject = new Subject<CellDoubleClickedEvent>();
     this.tabChangeSubject = new Subject<number>();
     this.addRolloverSubject = new Subject<Boolean>();
+    this.accountMonthlyTotalSubject = new Subject<Transaction[]>;
    }
 
   public cellDoubleClicked(event: CellDoubleClickedEvent) {
@@ -45,6 +49,10 @@ export class MessagingService {
 
   public addRollover(event: Boolean) {
     this.addRolloverSubject.next(event);
+  }
+
+  public accountMonthlyTotalChanges(transactions: Transaction[]) {
+    this.accountMonthlyTotalSubject.next(transactions);
   }
 
   public getCellDoubleClickedAsObservable() : Observable<CellDoubleClickedEvent> {
@@ -61,5 +69,9 @@ export class MessagingService {
 
   public getAddRolloverAsObservable(): Observable<Boolean> {
     return this.addRolloverSubject.asObservable();
+  }
+
+  public getAccountMonthlyTotalChanges(): Observable<Transaction[]> {
+    return this.accountMonthlyTotalSubject.asObservable();
   }
 }
