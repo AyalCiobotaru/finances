@@ -4,6 +4,7 @@ import ac.myfinances.rest.api.TransactionsApi;
 import ac.myfinances.rest.model.Transaction;
 import ac.myfinances.rest.model.TransactionDTO;
 import ac.myfinances.repo.TransactionRepository;
+import ac.myfinances.rest.model.UpdateTransactionBody;
 import ac.myfinances.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,23 +28,33 @@ public class TransactionController implements TransactionsApi {
     }
 
     @Override
-    public ResponseEntity<List<Transaction>> updateTransactions(List<TransactionDTO> transactions) {
+    public ResponseEntity<List<Transaction>> addTransactions(List<TransactionDTO> transactions) {
         if (transactions == null) {
             return ResponseEntity.badRequest().build();
         }
+        List<Transaction> newTransactions = new ArrayList<>();
 
-        List<Transaction> verifiedAccountsInTransactions = new ArrayList<>();
+        transactions.forEach(transactionDTO -> {
+            Transaction newTransaction = this.transactionService.verifyAccountId(transactionDTO);
+            this.transactionService.handleAccountChanges(newTransaction);
+            newTransactions.add(newTransaction);
+        });
+        List<Transaction> savedTransactions = this.transactionRepository.saveAll(newTransactions);
 
-        transactions.forEach(transaction -> {
-            Transaction verifiedTransaction = this.transactionService.verifyAccountId(transaction);
-            verifiedAccountsInTransactions.add(verifiedTransaction);
+        return ResponseEntity.ok(savedTransactions);
+    }
+
+    @Override
+    public ResponseEntity<Transaction> updateTransaction(UpdateTransactionBody updateTransactionBody) {
+        TransactionDTO oldTransactionDto = updateTransactionBody.getOldTransaction();
+        TransactionDTO updatedTransactionDto = updateTransactionBody.getUpdatedTransactionTransaction();
+        final Transaction[] updatedTransaction = {null};
+
+        this.transactionRepository.findById(oldTransactionDto.getId()).ifPresent(transaction -> {
+            updatedTransaction[0] = this.transactionService.handleTransactionUpdate(oldTransactionDto, updatedTransactionDto, transaction);
         });
 
-        this.transactionService.handleAccountChanges(verifiedAccountsInTransactions);
-
-        List<Transaction> latestTransaction = this.transactionRepository.saveAll(verifiedAccountsInTransactions);
-
-        return ResponseEntity.ok(latestTransaction);
+        return ResponseEntity.ok(updatedTransaction[0]);
     }
 
 }

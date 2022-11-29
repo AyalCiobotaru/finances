@@ -10,13 +10,10 @@
  * Do not edit the class manually.
  */
 import * as BigNumber from 'bignumber.js'
+import { TransactionDTO } from './transactionDTO'
 
-export interface TransactionDTO {
-    id?: string;
-    description?: string;
-    creditAccountId?: string;
-    debitAccountId?: string;
-    amount?: BigNumber.BigNumber;
-    date?: string;
+export interface updatedTransactionBody {
+    oldTransaction: TransactionDTO;
+    updatedTransaction: TransactionDTO;
 }
 

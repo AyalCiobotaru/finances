@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionsService } from 'src/app/rest';
+import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionDTO, TransactionsService } from 'src/app/rest';
 import * as BigNumber from 'bignumber.js';
 import { MessagingService } from './messaging.service';
+import { updatedTransactionBody } from '../rest/model/updatedtransactionBody';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataManagerService {
 
+  // Map of account name -> account
   private accountMap: Map<string, Account>;
 
   private transactionMap: Map<string, Transaction>;
@@ -30,10 +32,10 @@ export class DataManagerService {
     return new Promise<void>((resolve, reject) => {
       this.accountService.getAllAccounts().subscribe((accounts: Account[]) => {
         accounts.forEach((account: Account) => {
-          if (account.id) {
-            this.accountMap.set(account.id, account);
+          if (account.name) {
+            this.accountMap.set(account.name, account);
           } else {
-            console.log("Error, account without id", account);
+            console.log("Error, account without name", account);
             reject();
           }
         })
@@ -80,18 +82,38 @@ export class DataManagerService {
     })
   } 
 
-  public updateTransactions(transactions: Transaction[]) {
-    return new Promise<void>((resolve) => {
-      this.transactionService.updateTransactions(transactions).subscribe((updatedTransactions: Transaction[]) => {
-        updatedTransactions.forEach((transaction: Transaction) => {
+  public updateTransactions(updatedTransactionBody :updatedTransactionBody) {
+    return new Promise<Transaction>((resolve) => {
+      this.transactionService.updateTransactions(updatedTransactionBody).subscribe((updatedTransaction: Transaction) => {
+          if (updatedTransaction.id) {
+            this.transactionMap.set(updatedTransaction.id, updatedTransaction);
+          } else {
+            console.log("Invalid transaction, no id", updatedTransaction);
+          }
+        resolve(updatedTransaction)
+      }, (error: any) => {
+        console.log("Failed to update transaction")
+        console.log(error);
+      })
+    })
+  }
+
+  public addTransactions(transactions :TransactionDTO[]) {
+    return new Promise<Transaction[]>((resolve) => {
+      this.transactionService.addTransactions(transactions).subscribe((transactions: Transaction[]) => {
+        transactions.forEach(transaction => {
           if (transaction.id) {
             this.transactionMap.set(transaction.id, transaction);
+            let dto: TransactionDTO = transaction;
+            dto.creditAccountId = transaction.creditAccount?.id;
+            dto.debitAccountId = transaction.debitAccount?.id;
+            this.messagingService.accountMonthlyTotalChanges(dto);
           } else {
             console.log("Invalid transaction, no id", transaction);
           }
-        })
+        });
         this.messagingService.transactionsChanged();
-        resolve()
+        resolve(transactions)
       }, (error: any) => {
         console.log("Failed to update transaction")
         console.log(error);
@@ -104,7 +126,13 @@ export class DataManagerService {
      * @returns The accounts in the map.
      */
    public getAccounts(): Account[] {
-    return Array.from(this.accountMap.values());
+    return Array.from(this.accountMap.values()).sort((a: Account, b: Account) => {
+      if(a && a.name && b && b.name) {
+        return a.name.localeCompare(b.name);
+      } else {
+        return 0;
+      }
+    });
   }
 
   /**
@@ -129,6 +157,14 @@ export class DataManagerService {
      */
    public getSummaryList(): Map<string, BigNumber.BigNumber>[] {
     return this.summaryList;
+  }
+  /**
+   * Utility function to add commas to numbers
+   * @param number number to add commas
+   * @returns the number with commas every 3 digits
+   */
+  public numberWithCommas(number: BigNumber.BigNumber | Number) {
+    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
    
 }

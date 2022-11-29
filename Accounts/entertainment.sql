@@ -10,3 +10,5 @@ INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(),
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "D&D", (SELECT id from myServer.parent_category pc where pc.name = "Entertainment"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Crafts", (SELECT id from myServer.parent_category pc where pc.name = "Entertainment"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Wedding", (SELECT id from myServer.parent_category pc where pc.name = "Entertainment"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Nail Salon", (SELECT id from myServer.parent_category pc where pc.name = "Entertainment"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Movie Rentals", (SELECT id from myServer.parent_category pc where pc.name = "Entertainment"), "Paper", 0.0);

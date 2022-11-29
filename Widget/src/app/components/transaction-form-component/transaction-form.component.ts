@@ -6,6 +6,7 @@ import { Account } from 'src/app/rest';
 import { TransactionDTO } from 'src/app/rest/model/transactionDTO';
 import { Observable, startWith, map } from 'rxjs';
 import { FilterUtilService } from 'src/app/services/filter-util.service';
+import { MessagingService } from 'src/app/services/messaging.service';
 
 @Component({
   selector: 'app-transaction-form',
@@ -24,7 +25,7 @@ export class TransactionFormComponent implements OnInit {
   public selectedCreditAccount: Account | undefined;
   public selectedDebitAccount: Account | undefined;
 
-  constructor(private fb: FormBuilder, public filterService: FilterUtilService, private dataService: DataManagerService, @Inject(MAT_DIALOG_DATA) public data?: any) {
+  constructor(private fb: FormBuilder, public filterService: FilterUtilService, private dataService: DataManagerService, private messagingService: MessagingService, @Inject(MAT_DIALOG_DATA) public data?: any) {
     this.initializeTransactionForm();
     this.accounts = this.dataService.getAccounts();
 
@@ -56,9 +57,11 @@ export class TransactionFormComponent implements OnInit {
       // Create the id column for the dto
       transaction.creditAccountId = this.transactionForm.value.creditAccount.id;
       transaction.debitAccountId = this.transactionForm.value.debitAccount.id
-      
-      this.dataService.updateTransactions([transaction]).then(() => {
-        console.log("updated transaction");
+
+      let array : TransactionDTO[] = []
+      array.push(transaction)
+      this.dataService.addTransactions(array).then(() => {
+        this.messagingService.transactionsChanged();
       }, (error: any) => {
         console.log("Failed in updating or creating a transaction")
         console.log(error);

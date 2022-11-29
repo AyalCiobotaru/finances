@@ -1,0 +1,19 @@
+<div class="panel-body inline-flatpickr container">
+    <input
+        class="textInput"
+        type="text"
+        mwlFlatpickr
+        [(ngModel)]="inlineDatePicker"
+        [convertModelValue]="true"
+        [allowInput]="true"
+        [noCalendar]="true"
+        >
+    <input
+        class="form-control"
+        type="text"
+        mwlFlatpickr
+        [(ngModel)]="inlineDatePicker"
+        [altInput]="false"
+        [convertModelValue]="true"
+        [inline]="true">
+  </div>

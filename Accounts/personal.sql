@@ -8,3 +8,4 @@ INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(),
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Apartment Stuff", (SELECT id from myServer.parent_category pc where pc.name = "Personal"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Business", (SELECT id from myServer.parent_category pc where pc.name = "Personal"), "Paper", 0.0);
 INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Donations", (SELECT id from myServer.parent_category pc where pc.name = "Personal"), "Paper", 0.0);
+INSERT INTO myServer.account(id, name, parent_id, type, balance) VALUES (UUID(), "Personal", (SELECT id from myServer.parent_category pc where pc.name = "Personal"), "Paper", 0.0);

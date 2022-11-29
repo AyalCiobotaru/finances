@@ -4,12 +4,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { TransactionGridComponent } from './components/transaction-grid/transaction-grid.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FlatpickrModule } from 'angularx-flatpickr';
 
 
 //
 // Form Controls
 //
 
+import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -81,6 +83,8 @@ import { TransactionFormComponent } from './components/transaction-form-componen
 import { TabStripComponent } from './components/tab-strip/tab-strip.component';
 import { SummaryGridComponent } from './components/summary-grid/summary-grid.component';
 import { LicenseManager } from 'ag-grid-enterprise';
+import { DateEditorComponent } from './components/transaction-grid/date-editor/date-editor.component';
+import { CheckmarkHeaderComponent } from './components/summary-grid/checkmark-header/checkmark-header.component';
 
 LicenseManager.setLicenseKey("CompanyName=US Coast Guard Community Services Command,LicensedGroup=USCG,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=4,LicensedProductionInstancesCount=4,AssetReference=AG-024704,ExpiryDate=9_March_2023_[v2]_MTY3ODMyMDAwMDAwMA==881f6cf7765ec059341605719962a8a6")
 
@@ -93,9 +97,12 @@ LicenseManager.setLicenseKey("CompanyName=US Coast Guard Community Services Comm
     TransactionFormComponent,
     TabStripComponent,
     SummaryGridComponent,
+    DateEditorComponent,
+    CheckmarkHeaderComponent,
   ],
   imports: [
     AgGridModule,
+    FlatpickrModule.forRoot(),
     BrowserModule,
     BrowserAnimationsModule,
     MatTabsModule,
@@ -133,7 +140,8 @@ LicenseManager.setLicenseKey("CompanyName=US Coast Guard Community Services Comm
     MatChipsModule,
     MatAutocompleteModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

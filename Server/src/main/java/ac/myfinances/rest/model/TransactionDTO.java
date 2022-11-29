@@ -18,6 +18,8 @@ import javax.validation.Valid;
 public class TransactionDTO  implements Serializable {
   private static final long serialVersionUID = 1L;
 
+  @JsonProperty("id")
+  private String id;
 
   @JsonProperty("description")
   private String description;
@@ -34,6 +36,27 @@ public class TransactionDTO  implements Serializable {
   @JsonProperty("date")
   @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
   private OffsetDateTime date;
+
+  public TransactionDTO id(String id) {
+    this.id = id;
+    return this;
+  }
+
+
+  /**
+   * Get id
+   * @return id
+   */
+  @ApiModelProperty(value = "")
+
+
+  public String getId() {
+    return this.id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
   public TransactionDTO description(String description) {
     this.description = description;
     return this;
@@ -150,7 +173,8 @@ public class TransactionDTO  implements Serializable {
       return false;
     }
     TransactionDTO transactionDTO = (TransactionDTO) o;
-    return Objects.equals(this.description, transactionDTO.description) &&
+    return Objects.equals(this.id, transactionDTO.id) &&
+        Objects.equals(this.description, transactionDTO.description) &&
         Objects.equals(this.creditAccountId, transactionDTO.creditAccountId) &&
         Objects.equals(this.debitAccountId, transactionDTO.debitAccountId) &&
         Objects.equals(this.amount, transactionDTO.amount) &&
@@ -159,14 +183,15 @@ public class TransactionDTO  implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(description, creditAccountId, debitAccountId, amount, date);
+    return Objects.hash(id, description, creditAccountId, debitAccountId, amount, date);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class TransactionDTO {\n");
-    
+
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    creditAccountId: ").append(toIndentedString(creditAccountId)).append("\n");
     sb.append("    debitAccountId: ").append(toIndentedString(debitAccountId)).append("\n");

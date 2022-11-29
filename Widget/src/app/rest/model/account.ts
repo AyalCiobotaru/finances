@@ -18,6 +18,8 @@ export interface Account {
     name?: string;
     type?: string;
     balance?: number;
+    amount?: number;
     parentCategory?: ParentCategory;
+    rollover?: number;
 }
 
