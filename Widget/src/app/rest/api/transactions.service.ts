@@ -23,6 +23,7 @@ import { TransactionDTO } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
+import { updatedTransactionBody } from '../model/updatedtransactionBody';
 
 
 
@@ -139,10 +140,10 @@ export class TransactionsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateTransactions(transactionDTO: TransactionDTO[], observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Transaction>>;
-    public updateTransactions(transactionDTO: TransactionDTO[], observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Transaction>>>;
-    public updateTransactions(transactionDTO: TransactionDTO[], observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Transaction>>>;
-    public updateTransactions(transactionDTO: TransactionDTO[], observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public addTransactions(transactionDTO: TransactionDTO[], observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Array<Transaction>>;
+    public addTransactions(transactionDTO: TransactionDTO[], observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Transaction>>>;
+    public addTransactions(transactionDTO: TransactionDTO[], observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Transaction>>>;
+    public addTransactions(transactionDTO: TransactionDTO[], observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (transactionDTO === null || transactionDTO === undefined) {
             throw new Error('Required parameter transactionDTO was null or undefined when calling updateTransactions.');
         }
@@ -181,7 +182,7 @@ export class TransactionsService {
             responseType_ = 'text';
         }
 
-        return this.httpClient.post<Array<Transaction>>(`${this.configuration.basePath}/transactions`,
+        return this.httpClient.post<Array<Transaction>>(`${this.configuration.basePath}/transactions/add`,
             transactionDTO,
             {
                 context: localVarHttpContext,
@@ -193,5 +194,66 @@ export class TransactionsService {
             }
         );
     }
+
+    /**
+     * Updates transaction
+     * @param updatedTransactionBody request body holding the old transaction and the updated one
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+     public updateTransactions(updatedTransactionBody: updatedTransactionBody, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Transaction>;
+     public updateTransactions(updatedTransactionBody: updatedTransactionBody, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Transaction>>;
+     public updateTransactions(updatedTransactionBody: updatedTransactionBody, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Transaction>>;
+     public updateTransactions(updatedTransactionBody: updatedTransactionBody, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+         if (updatedTransactionBody === null || updatedTransactionBody === undefined) {
+             throw new Error('Required parameter transactionDTO was null or undefined when calling updateTransactions.');
+         }
+ 
+         let localVarHeaders = this.defaultHeaders;
+ 
+         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+         if (localVarHttpHeaderAcceptSelected === undefined) {
+             // to determine the Accept header
+             const httpHeaderAccepts: string[] = [
+                 'application/json'
+             ];
+             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+         }
+         if (localVarHttpHeaderAcceptSelected !== undefined) {
+             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+         }
+ 
+         let localVarHttpContext: HttpContext | undefined = options && options.context;
+         if (localVarHttpContext === undefined) {
+             localVarHttpContext = new HttpContext();
+         }
+ 
+ 
+         // to determine the Content-Type header
+         const consumes: string[] = [
+             'application/json'
+         ];
+         const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+         if (httpContentTypeSelected !== undefined) {
+             localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+         }
+ 
+         let responseType_: 'text' | 'json' = 'json';
+         if(localVarHttpHeaderAcceptSelected && localVarHttpHeaderAcceptSelected.startsWith('text')) {
+             responseType_ = 'text';
+         }
+ 
+         return this.httpClient.post<Array<Transaction>>(`${this.configuration.basePath}/transactions/update`,
+             updatedTransactionBody,
+             {
+                 context: localVarHttpContext,
+                 responseType: <any>responseType_,
+                 withCredentials: this.configuration.withCredentials,
+                 headers: localVarHeaders,
+                 observe: observe,
+                 reportProgress: reportProgress
+             }
+         );
+     }
 
 }

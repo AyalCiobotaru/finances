@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CellDoubleClickedEvent } from 'ag-grid-community';
 import { Observable, Subject } from 'rxjs';
-import { Transaction } from '../rest';
+import { TransactionDTO } from '../rest';
 
 @Injectable({
   providedIn: 'root'
@@ -28,14 +28,14 @@ export class MessagingService {
    */
   private addRolloverSubject: Subject<Boolean>;
 
-  private accountMonthlyTotalSubject: Subject<Transaction[]>
+  private accountMonthlyTotalSubject: Subject<{updateBody: TransactionDTO, inverted: boolean}>
 
   constructor() {
     this.transactionChanges = new Subject<void>();
     this.cellDoubleClickedSubject = new Subject<CellDoubleClickedEvent>();
     this.tabChangeSubject = new Subject<number>();
     this.addRolloverSubject = new Subject<Boolean>();
-    this.accountMonthlyTotalSubject = new Subject<Transaction[]>;
+    this.accountMonthlyTotalSubject = new Subject<any>;
    }
 
   public cellDoubleClicked(event: CellDoubleClickedEvent) {
@@ -51,8 +51,8 @@ export class MessagingService {
     this.addRolloverSubject.next(event);
   }
 
-  public accountMonthlyTotalChanges(transactions: Transaction[]) {
-    this.accountMonthlyTotalSubject.next(transactions);
+  public accountMonthlyTotalChanges(transactionDTO: TransactionDTO, invert: boolean = false) {
+    this.accountMonthlyTotalSubject.next({updateBody: transactionDTO, inverted: invert});
   }
 
   public getCellDoubleClickedAsObservable() : Observable<CellDoubleClickedEvent> {
@@ -71,7 +71,7 @@ export class MessagingService {
     return this.addRolloverSubject.asObservable();
   }
 
-  public getAccountMonthlyTotalChanges(): Observable<Transaction[]> {
+  public getAccountMonthlyTotalChanges(): Observable<{updateBody: TransactionDTO, inverted: boolean}> {
     return this.accountMonthlyTotalSubject.asObservable();
   }
 }

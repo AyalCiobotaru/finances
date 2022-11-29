@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { Account, AccountsService, ParentCategory, ParentCategoryService, Transaction, TransactionDTO, TransactionsService } from 'src/app/rest';
 import * as BigNumber from 'bignumber.js';
 import { MessagingService } from './messaging.service';
+import { updatedTransactionBody } from '../rest/model/updatedtransactionBody';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataManagerService {
 
+  // Map of account name -> account
   private accountMap: Map<string, Account>;
 
   private transactionMap: Map<string, Transaction>;
@@ -80,18 +82,38 @@ export class DataManagerService {
     })
   } 
 
-  public updateTransactions(transactions:TransactionDTO[]) {
+  public updateTransactions(updatedTransactionBody :updatedTransactionBody) {
+    return new Promise<Transaction>((resolve) => {
+      this.transactionService.updateTransactions(updatedTransactionBody).subscribe((updatedTransaction: Transaction) => {
+          if (updatedTransaction.id) {
+            this.transactionMap.set(updatedTransaction.id, updatedTransaction);
+          } else {
+            console.log("Invalid transaction, no id", updatedTransaction);
+          }
+        resolve(updatedTransaction)
+      }, (error: any) => {
+        console.log("Failed to update transaction")
+        console.log(error);
+      })
+    })
+  }
+
+  public addTransactions(transactions :TransactionDTO[]) {
     return new Promise<Transaction[]>((resolve) => {
-      this.transactionService.updateTransactions(transactions).subscribe((updatedTransactions: Transaction[]) => {
-        updatedTransactions.forEach((transaction: Transaction) => {
+      this.transactionService.addTransactions(transactions).subscribe((transactions: Transaction[]) => {
+        transactions.forEach(transaction => {
           if (transaction.id) {
             this.transactionMap.set(transaction.id, transaction);
+            let dto: TransactionDTO = transaction;
+            dto.creditAccountId = transaction.creditAccount?.id;
+            dto.debitAccountId = transaction.debitAccount?.id;
+            this.messagingService.accountMonthlyTotalChanges(dto);
           } else {
             console.log("Invalid transaction, no id", transaction);
           }
-        })
+        });
         this.messagingService.transactionsChanged();
-        resolve(updatedTransactions)
+        resolve(transactions)
       }, (error: any) => {
         console.log("Failed to update transaction")
         console.log(error);

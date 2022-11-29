@@ -32,7 +32,6 @@ export class CsvUtilService {
 
     return new Promise((resolve: any) => {
       while (worksheet['E' + rowIndex]) {
-        console.log("Processing row: " + rowIndex);
         let row : any = {};
         Object.keys(columns).forEach(function(column: any) {
             let cell = worksheet[column + rowIndex];
@@ -74,7 +73,6 @@ export class CsvUtilService {
 
         rowIndex++;
       }
-      console.log("Resolving out of csv-util.servise")
       resolve(transactions);
     })
   }

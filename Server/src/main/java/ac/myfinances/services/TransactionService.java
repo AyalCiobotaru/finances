@@ -100,11 +100,40 @@ public class TransactionService {
         return transaction;
     }
 
-    public void handleAccountChanges(List<Transaction> transactions) {
-        transactions.forEach(this::handleAccountChanges);
+    public Transaction handleTransactionUpdate(TransactionDTO oldTransactionDto, TransactionDTO updatedTransactionDto, Transaction foundTransaction) {
+        Transaction updatedTransaction = null;
+
+        if (!oldTransactionDto.getDate().equals(updatedTransactionDto.getDate())) {
+            foundTransaction.setDate(updatedTransactionDto.getDate());
+        } else if (!oldTransactionDto.getDescription().equals(updatedTransactionDto.getDescription())) {
+            foundTransaction.setDescription(updatedTransactionDto.getDescription());
+        } else {
+            this.handleAccountChanges(foundTransaction, true);
+            updatedTransaction = this.handleAccountChanges(updatedTransactionDto, false);
+        }
+        updatedTransaction = updatedTransaction == null ? this.transactionRepository.save(foundTransaction) : this.transactionRepository.save(updatedTransaction);
+
+        return updatedTransaction;
     }
 
     public void handleAccountChanges(Transaction transaction) {
+        this.handleAccountChanges(transaction, false);
+    }
+
+    public Transaction handleAccountChanges(TransactionDTO transactionDTO, Boolean inverted) {
+        Transaction transaction = new Transaction()
+            .id(transactionDTO.getId())
+            .amount(transactionDTO.getAmount())
+            .description(transactionDTO.getDescription())
+            .date(transactionDTO.getDate());
+        this.accountRepository.findById(transactionDTO.getCreditAccountId()).ifPresent(transaction::setCreditAccount);
+        this.accountRepository.findById(transactionDTO.getDebitAccountId()).ifPresent(transaction::setDebitAccount);
+
+        this.handleAccountChanges(transaction, inverted);
+        return transaction;
+    }
+
+    public void handleAccountChanges(Transaction transaction, Boolean inverted) {
         HashMap<String, Account> accountMap = new HashMap<>();
         List<Account> accounts = this.accountRepository.findAll();
         accounts.forEach(account -> {
@@ -115,40 +144,18 @@ public class TransactionService {
         BigDecimal amount = transaction.getAmount();
 
         Account creditedAccount = accountMap.get(transaction.getCreditAccount().getName());
-        creditedAccount.balance(creditedAccount.getBalance().add(amount));
+        creditedAccount.balance(inverted ? creditedAccount.getBalance().subtract(amount) : creditedAccount.getBalance().add(amount));
         accountsToUpdate.put(creditedAccount.getName(), creditedAccount);
 
         Account debitedAccount = accountMap.get(transaction.getDebitAccount().getName());
         // Income is slightly different, NEVER take money out of an income paper account, it should always be a positive number.
-        debitedAccount.balance(debitedAccount.getType().equals("Income") ? debitedAccount.getBalance().add(amount) : debitedAccount.getBalance().subtract(amount));
+        if (debitedAccount.getType().equals("Income")) {
+            debitedAccount.balance(inverted ? debitedAccount.getBalance().subtract(amount): debitedAccount.getBalance().add(amount));
+        } else {
+            debitedAccount.balance(inverted ? debitedAccount.getBalance().add(amount) : debitedAccount.getBalance().subtract(amount));
+        }
         accountsToUpdate.put(debitedAccount.getName(), debitedAccount);
 
         this.accountRepository.saveAll(accountsToUpdate.values());
-    }
-
-    private void revertOldTransactionAccounts(Map<String, TransactionDTO> transactions) {
-        HashMap<String, Account> accountMap = new HashMap<>();
-        List<Account> accounts = this.accountRepository.findAll();
-        accounts.forEach(account -> {
-            accountMap.put(account.getId(), account);
-        });
-        HashMap<String, Account> accountsToUpdate = new HashMap<>();
-
-        new ArrayList<>(transactions.values()).forEach(t -> {
-            BigDecimal amount = t.getAmount();
-
-            Account creditedAccount = accountMap.get(t.getCreditAccountId());
-            creditedAccount.balance(creditedAccount.getBalance().subtract(amount));
-            accountsToUpdate.put(creditedAccount.getName(), creditedAccount);
-
-            Account debitedAccount = accountMap.get(t.getDebitAccountId());
-            // Income is slightly different, NEVER take money out of an income paper account, it should always be a positive number.
-            debitedAccount.balance(debitedAccount.getType().equals("Income") ? debitedAccount.getBalance().subtract(amount) : debitedAccount.getBalance().add(amount));
-            accountsToUpdate.put(debitedAccount.getName(), debitedAccount);
-
-        });
-
-        this.accountRepository.saveAll(accountsToUpdate.values());
-
     }
 }

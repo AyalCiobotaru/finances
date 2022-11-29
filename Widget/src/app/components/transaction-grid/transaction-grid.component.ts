@@ -13,6 +13,7 @@ import { FormControl } from '@angular/forms';
 import { MessagingService } from 'src/app/services/messaging.service';
 import { DateEditorComponent } from './date-editor/date-editor.component';
 import * as BigNumber from 'bignumber.js';
+import { updatedTransactionBody } from 'src/app/rest/model/updatedtransactionBody';
 
 @Component({
   selector: 'app-transaction-grid',
@@ -240,54 +241,51 @@ export class TransactionGridComponent implements OnInit {
   * @param params CellValueChangedParams
   */
   public cellValueChanged(params: CellValueChangedEvent) {
-    // Need to do the inverse transaction to fix the totals
-    let oldTransaction: Transaction = {};
-    let transactionDTO: TransactionDTO = {};
+    let updatedTransactionBody: updatedTransactionBody = {
+      oldTransaction: JSON.parse(JSON.stringify(params.data)),
+      updatedTransaction: JSON.parse(JSON.stringify(params.data))
+    };
     let descriptionChange = false;
-    Object.assign(oldTransaction, params.data);
-    Object.assign(transactionDTO, params.data);
-    transactionDTO.creditAccountId = params.data.creditAccount.id;
-    transactionDTO.debitAccountId = params.data.debitAccount.id;
+    updatedTransactionBody.updatedTransaction.creditAccountId = params.data.creditAccount.id;
+    updatedTransactionBody.updatedTransaction.debitAccountId = params.data.debitAccount.id;
+    updatedTransactionBody.updatedTransaction.amount = BigNumber.BigNumber(params.data.amount);
+    updatedTransactionBody.oldTransaction.creditAccountId = params.data.creditAccount.id;
+    updatedTransactionBody.oldTransaction.debitAccountId = params.data.debitAccount.id;
+    updatedTransactionBody.oldTransaction.amount = BigNumber.BigNumber(params.data.amount);
+
 
     switch (params.column.getColId()) {
       case "0":
-        oldTransaction.debitAccount = this.dataService.getAccountMap().get(params.oldValue);
+        updatedTransactionBody.oldTransaction.debitAccountId = this.dataService.getAccountMap().get(params.oldValue)?.id;
         break;
       case "1":
-        oldTransaction.date = params.oldValue;
-        transactionDTO.date = new Date(params.newValue).toISOString();
+        updatedTransactionBody.oldTransaction.date = params.oldValue;
+        updatedTransactionBody.updatedTransaction.date = new Date(params.newValue).toISOString();
         break;
       case "2":
-        oldTransaction.description = params.oldValue;
+        updatedTransactionBody.oldTransaction.description = params.oldValue;
         descriptionChange = true;
         break;
       case "3":
-        oldTransaction.creditAccount = this.dataService.getAccountMap().get(params.oldValue);
+        updatedTransactionBody.oldTransaction.creditAccountId = this.dataService.getAccountMap().get(params.oldValue)?.id;
         break;
       case "4":
-        oldTransaction.amount = BigNumber.BigNumber(params.oldValue);
-        transactionDTO.amount = BigNumber.BigNumber(params.newValue);
+        updatedTransactionBody.oldTransaction.amount = BigNumber.BigNumber(params.oldValue);
+        updatedTransactionBody.updatedTransaction.amount = BigNumber.BigNumber(params.newValue);
         break;
 
-    }
+      }
+
     if (!descriptionChange) {
-      // Switch the accounts around to undo the transaction
-      let tempAccount = oldTransaction.creditAccount
-      oldTransaction.creditAccount = oldTransaction.debitAccount
-      oldTransaction.debitAccount = tempAccount;
-      
-      this.messagingService.accountMonthlyTotalChanges([oldTransaction]);
+      // Need to do the inverse transaction to fix the totals
+      this.messagingService.accountMonthlyTotalChanges(updatedTransactionBody.oldTransaction, true);
     }
 
-    console.log("Built old Transaction");
-    console.log(oldTransaction)
-    console.log("\nOnCellValueChanged params")
-    console.log(params);
-
-    this.dataService.updateTransactions([transactionDTO]).then(transactions => {
-      console.log("\nUpdated Transaction")
-      console.log(transactions[0])
-      this.messagingService.accountMonthlyTotalChanges(transactions);
+    this.dataService.updateTransactions(updatedTransactionBody).then((transaction: Transaction) => {
+      let transactionDTO: TransactionDTO = transaction;
+      transactionDTO.creditAccountId = transaction.creditAccount?.id;
+      transactionDTO.debitAccountId = transaction.debitAccount?.id;
+      this.messagingService.accountMonthlyTotalChanges(transactionDTO);
     });
   }
 
@@ -346,8 +344,7 @@ export class TransactionGridComponent implements OnInit {
 
       // finally, reload the data
       promise.then(transactions => {
-        console.log("Making call to backend")
-        this.dataService.updateTransactions(transactions).then(() => {
+        this.dataService.addTransactions(transactions).then(() => {
           this.dataSource.data = this.dataService.getTransactions();
           this.gridApi.refreshCells();
           this.gridApi.hideOverlay();
@@ -387,7 +384,6 @@ export class TransactionGridComponent implements OnInit {
    * @param event Observer handler for a cell in the Summary tab being double clicked.
    */
   private handleCellDoubleClickedInSummary(event: CellDoubleClickedEvent) {
-    console.log(event);
     this.accountByDateFilter = event.data.account;
     this.dateFilterIndex = parseInt(event.column.getColId());
     this.gridApi.onFilterChanged()

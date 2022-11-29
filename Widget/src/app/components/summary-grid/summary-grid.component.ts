@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import {ColDef, GridApi, GridOptions, RowGroupingDisplayType } from 'ag-grid-community';
+import {ColDef, FirstDataRenderedEvent, GridApi, GridOptions, RowGroupingDisplayType } from 'ag-grid-community';
 import * as BigNumber from 'bignumber.js';
 import { SummaryRow } from 'src/app/models/summaryRow';
-import { Transaction } from 'src/app/rest';
+import { TransactionDTO } from 'src/app/rest';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { MessagingService } from 'src/app/services/messaging.service';
 import { SummaryDataService } from 'src/app/services/summary-data.service';
@@ -52,7 +52,7 @@ export class SummaryGridComponent implements OnInit {
       this.setupGrid();
     })
     this.messagingService.getAddRolloverAsObservable().subscribe(event => this.handleAddRollOver(event))
-    this.messagingService.getAccountMonthlyTotalChanges().subscribe(transactions => this.handleAccountMonthlyTotalChanges(transactions))
+    this.messagingService.getAccountMonthlyTotalChanges().subscribe(updateMessage => this.handleAccountMonthlyTotalChanges(updateMessage))
   }
 
   public defaultColDef: ColDef = {
@@ -74,22 +74,27 @@ export class SummaryGridComponent implements OnInit {
     this.renderRowsToFit();
   }
 
-  public onFirstDataRendered(params: any) {
-    params.gridApi.sizeColumnsToFit();
+  public onFirstDataRendered(params: FirstDataRenderedEvent) {
+    params.api.sizeColumnsToFit();
   }
   
   public renderRowsToFit() {
     this.gridApi.sizeColumnsToFit();
   }
 
-  private handleAccountMonthlyTotalChanges(transactions: Transaction[]) {
-    transactions.forEach(transaction => {
-      if (typeof transaction.amount == "number") {
-        transaction.amount = BigNumber.BigNumber(transaction.amount);
-      }
-      this.summaryService.adjustMonthlyAmounts(transaction.amount!, new Date(transaction.date!).getMonth(), transaction.creditAccount?.name!);
-      this.summaryService.adjustMonthlyAmounts(transaction.amount!.negated(), new Date(transaction.date!).getMonth(), transaction.debitAccount?.name!);
-    })
+  private handleAccountMonthlyTotalChanges(updateMessage: {updateBody: TransactionDTO, inverted: boolean}) {
+    if (typeof updateMessage.updateBody.amount == "number" || typeof updateMessage.updateBody.amount == "string") {
+      updateMessage.updateBody.amount = BigNumber.BigNumber(updateMessage.updateBody.amount);
+    }
+    let debitAccount = this.summaryService.getRowMap().get(updateMessage.updateBody.debitAccountId!);
+
+    if (updateMessage.inverted) {
+      this.summaryService.adjustMonthlyAmounts(updateMessage.updateBody.amount!.negated(), new Date(updateMessage.updateBody.date!).getMonth(), updateMessage.updateBody.creditAccountId!);
+      this.summaryService.adjustMonthlyAmounts(debitAccount?.account?.type === "Income" ? updateMessage.updateBody.amount!.negated() : updateMessage.updateBody.amount!, new Date(updateMessage.updateBody.date!).getMonth(), updateMessage.updateBody.debitAccountId!);
+    } else {
+      this.summaryService.adjustMonthlyAmounts(updateMessage.updateBody.amount!, new Date(updateMessage.updateBody.date!).getMonth(), updateMessage.updateBody.creditAccountId!);
+      this.summaryService.adjustMonthlyAmounts(debitAccount?.account?.type === "Income" ? updateMessage.updateBody.amount! : updateMessage.updateBody.amount!.negated(), new Date(updateMessage.updateBody.date!).getMonth(), updateMessage.updateBody.debitAccountId!);
+    }
     this.dataSource.data = this.summaryService.getRowData();
     this.gridApi.refreshCells();
   }

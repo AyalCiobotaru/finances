@@ -11,9 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class TransactionController implements TransactionsApi {
@@ -36,12 +34,6 @@ public class TransactionController implements TransactionsApi {
         }
         List<Transaction> newTransactions = new ArrayList<>();
 
-//        HashMap<String, TransactionDTO> transactionMap = new HashMap<>();
-//        AtomicInteger newCounter = new AtomicInteger(1);
-//        transactions.forEach(t -> {
-//            transactionMap.put((t.getId() != null ? t.getId(): "NEW" + newCounter), t);
-//            newCounter.getAndIncrement();
-//        });
         transactions.forEach(transactionDTO -> {
             Transaction newTransaction = this.transactionService.verifyAccountId(transactionDTO);
             this.transactionService.handleAccountChanges(newTransaction);
@@ -54,8 +46,15 @@ public class TransactionController implements TransactionsApi {
 
     @Override
     public ResponseEntity<Transaction> updateTransaction(UpdateTransactionBody updateTransactionBody) {
+        TransactionDTO oldTransactionDto = updateTransactionBody.getOldTransaction();
+        TransactionDTO updatedTransactionDto = updateTransactionBody.getUpdatedTransactionTransaction();
+        final Transaction[] updatedTransaction = {null};
 
-        return null;
+        this.transactionRepository.findById(oldTransactionDto.getId()).ifPresent(transaction -> {
+            updatedTransaction[0] = this.transactionService.handleTransactionUpdate(oldTransactionDto, updatedTransactionDto, transaction);
+        });
+
+        return ResponseEntity.ok(updatedTransaction[0]);
     }
 
 }

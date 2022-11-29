@@ -11,7 +11,7 @@ import { DataManagerService } from './data-manager.service';
 export class SummaryDataService {
 
   /**
-  * Stores the data while aggregating for quick access
+  * Stores the data while aggregating for quick access account id -> summaryRow
   */
   private rowData : Map<string, SummaryRow> = new Map<string, SummaryRow>();
 
@@ -27,7 +27,7 @@ export class SummaryDataService {
       for (let account of accounts) {
         if (account.parentCategory?.name !== "Catch-All")
         {
-          if (account.name) {
+          if (account.id) {
             let summaryRow: SummaryRow = {
               id: account.id,
               account: account,
@@ -41,7 +41,7 @@ export class SummaryDataService {
             for (let index = 0; index < 12; index++) {
               summaryRow.monthlyAmounts[index] = new BigNumber.BigNumber(0);
             }
-            this.rowData.set(account.name, summaryRow);
+            this.rowData.set(account.id, summaryRow);
   
           } else {
             console.log("Missing account name when attempting to create summaryRow");
@@ -57,7 +57,7 @@ export class SummaryDataService {
         const summaryMap = summaryList[index];
         for (let summary of summaryMap) {
           // Gets the summaryRow based off the account name
-          let summaryRow = this.rowData.get(summary[0]);
+          let summaryRow = this.rowData.get(this.dataService.getAccountMap().get(summary[0])?.id!);
           if (summaryRow) {
 
             // Make sure the summary row isn't undefined or null
@@ -98,20 +98,18 @@ export class SummaryDataService {
     return Array.from(this.rowData.values());
   }
 
-  public adjustMonthlyAmounts(amount: BigNumber.BigNumber, month: number, account: string) {
-    let row = this.rowData.get(account);
+  public getRowMap(): Map<string, SummaryRow> {
+    return this.rowData;
+  }
+
+  public adjustMonthlyAmounts(amount: BigNumber.BigNumber, month: number, accountId: string) {
+    let row = this.rowData.get(accountId);
     
-    console.log("Editing Row:")
-    console.log(row);
     if (row) {
-      console.log("\nEditing month");
-      console.log(row.monthlyAmounts[month]);
-      console.log("\nAmount");
-      console.log(amount);
       row.total = row.total.plus(amount);
       row.monthlyAmounts[month] = row?.monthlyAmounts[month].plus(amount);
+      this.rowData.set(accountId, row);
     }
-    this.rowData.set(account, row!);
   }
 }
     
