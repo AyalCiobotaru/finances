@@ -9,15 +9,13 @@ import { updatedTransactionBody } from '../rest/model/updatedtransactionBody';
 })
 export class DataManagerService {
 
-  // Map of account name -> account
+  /** Map of account name -> account */
   private accountMap: Map<string, Account>;
 
-  // Map of transaction id -> transaction
+  /** Map of transaction id -> transaction */
   private transactionMap: Map<string, Transaction>;
 
-  /**
-   * List of months Map with account -> amount for given month
-   */
+  /** List of months Map with account -> amount for given month */
   private summaryList : Map<string, BigNumber.BigNumber>[];
 
   constructor(private transactionService: TransactionsService, private accountService: AccountsService, private messagingService: MessagingService) {

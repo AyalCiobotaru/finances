@@ -63,9 +63,6 @@ public class TransactionController implements TransactionsApi {
         this.transactionRepository.findById(transactionId).ifPresent(transaction -> {
             this.transactionService.handleAccountChanges(transaction, true);
             deletedTransactions[0] = transaction;
-//            this.transactionRepository.deleteCreditTransaction(transactionId);
-//            this.transactionRepository.deleteDebitTransaction(transactionId);
-//            this.transactionRepository.flush();
 
             this.transactionRepository.deleteById(transactionId);
         });
