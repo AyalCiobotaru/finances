@@ -285,7 +285,7 @@ export class TransactionGridComponent implements OnInit {
       }
 
     if (!descriptionChange) {
-      // Need to do the inverse transaction to fix the totals
+      // Need to do the inverse transaction to fix the totals if the change isn't a description change
       this.messagingService.accountMonthlyTotalChanges(updatedTransactionBody.oldTransaction, true);
     }
 
