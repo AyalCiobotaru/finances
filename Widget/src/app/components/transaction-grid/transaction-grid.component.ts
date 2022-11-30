@@ -14,6 +14,7 @@ import { MessagingService } from 'src/app/services/messaging.service';
 import { DateEditorComponent } from './date-editor/date-editor.component';
 import * as BigNumber from 'bignumber.js';
 import { updatedTransactionBody } from 'src/app/rest/model/updatedtransactionBody';
+import { TransactionActionComponent } from './transaction-action/transaction-action.component';
 
 @Component({
   selector: 'app-transaction-grid',
@@ -110,6 +111,13 @@ export class TransactionGridComponent implements OnInit {
    */
   private setupGrid() {
     let colDefs: ColDef[] = [
+      { 
+        width: 35,
+        minWidth: 35,
+        cellRenderer: TransactionActionComponent,
+        sortable: false,
+        cellClass: "grid-cell-centered"
+      },
       {
         colId: "0",
         headerName: 'Debit',

@@ -9,14 +9,13 @@ import { updatedTransactionBody } from '../rest/model/updatedtransactionBody';
 })
 export class DataManagerService {
 
-  // Map of account name -> account
+  /** Map of account name -> account */
   private accountMap: Map<string, Account>;
 
+  /** Map of transaction id -> transaction */
   private transactionMap: Map<string, Transaction>;
 
-  /**
-   * List of months Map with account -> amount for given month
-   */
+  /** List of months Map with account -> amount for given month */
   private summaryList : Map<string, BigNumber.BigNumber>[];
 
   constructor(private transactionService: TransactionsService, private accountService: AccountsService, private messagingService: MessagingService) {
@@ -28,7 +27,7 @@ export class DataManagerService {
     }
   }
 
-  public instantiateAccountData() {
+  public instantiateAccountData(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.accountService.getAllAccounts().subscribe((accounts: Account[]) => {
         accounts.forEach((account: Account) => {
@@ -44,7 +43,7 @@ export class DataManagerService {
     })
   }
 
-  public instantiateTransactionData() {
+  public instantiateTransactionData(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.transactionService.getAllTransactions().subscribe((transactions: Transaction[]) => {
         transactions.forEach((transaction: Transaction) => {
@@ -82,7 +81,7 @@ export class DataManagerService {
     })
   } 
 
-  public updateTransactions(updatedTransactionBody :updatedTransactionBody) {
+  public updateTransactions(updatedTransactionBody :updatedTransactionBody): Promise<Transaction> {
     return new Promise<Transaction>((resolve) => {
       this.transactionService.updateTransactions(updatedTransactionBody).subscribe((updatedTransaction: Transaction) => {
           if (updatedTransaction.id) {
@@ -98,7 +97,7 @@ export class DataManagerService {
     })
   }
 
-  public addTransactions(transactions :TransactionDTO[]) {
+  public addTransactions(transactions :TransactionDTO[]): Promise<Transaction[]> {
     return new Promise<Transaction[]>((resolve) => {
       this.transactionService.addTransactions(transactions).subscribe((transactions: Transaction[]) => {
         transactions.forEach(transaction => {
@@ -116,6 +115,24 @@ export class DataManagerService {
         resolve(transactions)
       }, (error: any) => {
         console.log("Failed to update transaction")
+        console.log(error);
+      })
+    })
+  }
+
+  public deleteTransaction(transactionId: string): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.transactionService.deleteTransaction(transactionId).subscribe(deletedTransaction => {
+        console.log(`Deleted transaction with id ${transactionId}`)
+        this.transactionMap.delete(deletedTransaction.id)
+        let dto: TransactionDTO = deletedTransaction;
+        dto.creditAccountId = deletedTransaction.creditAccount?.id;
+        dto.debitAccountId = deletedTransaction.debitAccount?.id;
+        this.messagingService.accountMonthlyTotalChanges(dto, true);
+        this.messagingService.transactionsChanged();
+        resolve();
+      }, (error) => {
+        console.log("Failed to delete");
         console.log(error);
       })
     })

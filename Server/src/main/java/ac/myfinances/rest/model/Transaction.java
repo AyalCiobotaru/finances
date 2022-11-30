@@ -32,7 +32,7 @@ public class Transaction  implements Serializable {
   @JsonProperty("description")
   private String description;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne()
   @JoinTable(name = "credit_account_transaction",
     joinColumns =
             { @JoinColumn(name = "transaction_id", referencedColumnName = "id") },
@@ -41,7 +41,7 @@ public class Transaction  implements Serializable {
   @JsonProperty("creditAccount")
   private Account creditAccount;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne()
   @JoinTable(name = "debit_account_transaction",
     joinColumns =
             { @JoinColumn(name = "transaction_id", referencedColumnName = "id") },

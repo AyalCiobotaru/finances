@@ -85,6 +85,7 @@ import { SummaryGridComponent } from './components/summary-grid/summary-grid.com
 import { LicenseManager } from 'ag-grid-enterprise';
 import { DateEditorComponent } from './components/transaction-grid/date-editor/date-editor.component';
 import { CheckmarkHeaderComponent } from './components/summary-grid/checkmark-header/checkmark-header.component';
+import { TransactionActionComponent } from './components/transaction-grid/transaction-action/transaction-action.component';
 
 LicenseManager.setLicenseKey("CompanyName=US Coast Guard Community Services Command,LicensedGroup=USCG,LicenseType=MultipleApplications,LicensedConcurrentDeveloperCount=4,LicensedProductionInstancesCount=4,AssetReference=AG-024704,ExpiryDate=9_March_2023_[v2]_MTY3ODMyMDAwMDAwMA==881f6cf7765ec059341605719962a8a6")
 
@@ -99,6 +100,7 @@ LicenseManager.setLicenseKey("CompanyName=US Coast Guard Community Services Comm
     SummaryGridComponent,
     DateEditorComponent,
     CheckmarkHeaderComponent,
+    TransactionActionComponent,
   ],
   imports: [
     AgGridModule,
