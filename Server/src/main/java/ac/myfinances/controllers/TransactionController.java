@@ -57,4 +57,19 @@ public class TransactionController implements TransactionsApi {
         return ResponseEntity.ok(updatedTransaction[0]);
     }
 
+    @Override
+    public ResponseEntity<Transaction> deleteTransaction(String transactionId) {
+        final Transaction[] deletedTransactions = {null};
+        this.transactionRepository.findById(transactionId).ifPresent(transaction -> {
+            this.transactionService.handleAccountChanges(transaction, true);
+            deletedTransactions[0] = transaction;
+//            this.transactionRepository.deleteCreditTransaction(transactionId);
+//            this.transactionRepository.deleteDebitTransaction(transactionId);
+//            this.transactionRepository.flush();
+
+            this.transactionRepository.deleteById(transactionId);
+        });
+
+        return ResponseEntity.ok(deletedTransactions[0]);
+    }
 }

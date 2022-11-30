@@ -155,6 +155,49 @@ bootWar.doLast { task ->
     ant.checksum file: task.archivePath
 }
 
+task generateServerApi(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+    group "Custom"
+    description "Generate the Server Api"
+
+    generatorName = "spring"
+    inputSpec = "$rootDir/swagger/index.yaml".toString()
+    outputDir = "$rootDir/Server/src/generated".toString()
+    templateDir = "$rootDir/swagger/templates"
+    apiPackage = "ac.myfinances.generated.api"
+    modelPackage = "ac.myfinances.generated.model"
+    validateSpec = false
+    configOptions = [
+            sourceFolder: "java",
+            interfaceOnly: "true",
+            serializableModel: "true",
+            describeAllEnumsAsStrings: "true"
+    ]
+}
+
+task generateAngularTypescriptApi(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+    group "Custom"
+    description "Generate the Angular TS Api"
+
+    generatorName = "typescript-angular"
+    inputSpec = "$rootDir/swagger/index.yaml".toString()
+    outputDir = "$rootDir/Server/src/generated/ts".toString()
+    apiPackage = "api"
+    modelPackage = "model"
+    validateSpec = false
+    configOptions = [
+            interfaceOnly: "true",
+            serializableModel: "true",
+            ngVersion: "14.2.2",
+            npmVersion: eagerlyFetchedVersion,
+            // when trying to use version.toString() or "$version", the property wasn't evaluated yet and it was returning
+            // "task ':generateAngularTypescriptApi' property 'version'" instead of evaluating the org.gradle.api.internal.provider.DefaultProperty.
+            // Couldn't use version.get() because it returned an error saying version didn't have a value meaning this config was getting evaulated
+            // before the gradle.properties. Creating a placeholder allowed the value to be passed in by eagerly fetching what version was
+            sourceMap: "true",
+            supportsES6: "true"
+    ]
+}
+
 
 def bumpVersion(String version) {
     logger.lifecycle("Old version ${version}");

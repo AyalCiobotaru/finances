@@ -31,6 +31,24 @@ public interface TransactionsApi {
     }
 
     /**
+     * DELETE /transactions/{transactionId} : Delete a transaction
+     *
+     * @param transactionId The id that needs to be deleted. (required)
+     * @return successful operation (status code 200)
+     */
+    @ApiOperation(value = "Delete a transaction", nickname = "deleteTransaction", notes = "", tags={ "Transactions", })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation") })
+    @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = "/transactions/{transactionId}"
+    )
+    default ResponseEntity<Transaction> deleteTransaction(@ApiParam(value = "The id that needs to be deleted.", required = true) @PathVariable("transactionId") String transactionId) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /transactions : Gets all the transactions
      *
      * @return successful operation (status code 200)

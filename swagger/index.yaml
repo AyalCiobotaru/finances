@@ -140,6 +140,23 @@ paths:
                   type: "array"
                   items:
                     $ref: '#/components/schemas/Transaction'
+  /transactions/{transactionId}:
+      delete:
+        tags: 
+          - "Transactions"
+        summary: "Delete a transaction"
+        operationId: "deleteTransaction"
+        parameters:
+        - name: "transactionId"
+          in: "path"
+          description: "The id that needs to be deleted."
+          required: true
+          schema:
+            type: "string"
+        responses:
+          "200":
+            description: "successful operation"
+
   /parentCategory:
     get:
       tags:
@@ -210,7 +227,7 @@ components:
           format: "float"
         date:
           type: "string"
-          format: "date"s
+          format: "date"
     ParentCategory:
       type: "object"
       x-jpa: true
