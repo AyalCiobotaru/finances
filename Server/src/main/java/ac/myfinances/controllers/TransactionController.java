@@ -9,6 +9,7 @@ import ac.myfinances.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,50 +24,50 @@ public class TransactionController implements TransactionsApi {
     private TransactionService transactionService;
 
     @Override
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
-        return ResponseEntity.ok(this.transactionRepository.findAll());
+    public Flux<Transaction> getAllTransactions() {
+        return this.transactionRepository.findAll();
     }
 
-    @Override
-    public ResponseEntity<List<Transaction>> addTransactions(List<TransactionDTO> transactions) {
-        if (transactions == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        List<Transaction> newTransactions = new ArrayList<>();
+//    @Override
+//    public ResponseEntity<List<Transaction>> addTransactions(List<TransactionDTO> transactions) {
+//        if (transactions == null) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        List<Transaction> newTransactions = new ArrayList<>();
+//
+//        transactions.forEach(transactionDTO -> {
+//            Transaction newTransaction = this.transactionService.verifyAccountId(transactionDTO);
+//            this.transactionService.handleAccountChanges(newTransaction);
+//            newTransactions.add(newTransaction);
+//        });
+//        List<Transaction> savedTransactions = this.transactionRepository.saveAll(newTransactions);
+//
+//        return ResponseEntity.ok(savedTransactions);
+//    }
 
-        transactions.forEach(transactionDTO -> {
-            Transaction newTransaction = this.transactionService.verifyAccountId(transactionDTO);
-            this.transactionService.handleAccountChanges(newTransaction);
-            newTransactions.add(newTransaction);
-        });
-        List<Transaction> savedTransactions = this.transactionRepository.saveAll(newTransactions);
+//    @Override
+//    public ResponseEntity<Transaction> updateTransaction(UpdateTransactionBody updateTransactionBody) {
+//        TransactionDTO oldTransactionDto = updateTransactionBody.getOldTransaction();
+//        TransactionDTO updatedTransactionDto = updateTransactionBody.getUpdatedTransactionTransaction();
+//        final Transaction[] updatedTransaction = {null};
+//
+//        this.transactionRepository.findById(oldTransactionDto.getId()).ifPresent(transaction -> {
+//            updatedTransaction[0] = this.transactionService.handleTransactionUpdate(oldTransactionDto, updatedTransactionDto, transaction);
+//        });
+//
+//        return ResponseEntity.ok(updatedTransaction[0]);
+//    }
 
-        return ResponseEntity.ok(savedTransactions);
-    }
-
-    @Override
-    public ResponseEntity<Transaction> updateTransaction(UpdateTransactionBody updateTransactionBody) {
-        TransactionDTO oldTransactionDto = updateTransactionBody.getOldTransaction();
-        TransactionDTO updatedTransactionDto = updateTransactionBody.getUpdatedTransactionTransaction();
-        final Transaction[] updatedTransaction = {null};
-
-        this.transactionRepository.findById(oldTransactionDto.getId()).ifPresent(transaction -> {
-            updatedTransaction[0] = this.transactionService.handleTransactionUpdate(oldTransactionDto, updatedTransactionDto, transaction);
-        });
-
-        return ResponseEntity.ok(updatedTransaction[0]);
-    }
-
-    @Override
-    public ResponseEntity<Transaction> deleteTransaction(String transactionId) {
-        final Transaction[] deletedTransactions = {null};
-        this.transactionRepository.findById(transactionId).ifPresent(transaction -> {
-            this.transactionService.handleAccountChanges(transaction, true);
-            deletedTransactions[0] = transaction;
-
-            this.transactionRepository.deleteById(transactionId);
-        });
-
-        return ResponseEntity.ok(deletedTransactions[0]);
-    }
+//    @Override
+//    public ResponseEntity<Transaction> deleteTransaction(String transactionId) {
+//        final Transaction[] deletedTransactions = {null};
+//        this.transactionRepository.findById(transactionId).ifPresent(transaction -> {
+//            this.transactionService.handleAccountChanges(transaction, true);
+//            deletedTransactions[0] = transaction;
+//
+//            this.transactionRepository.deleteById(transactionId);
+//        });
+//
+//        return ResponseEntity.ok(deletedTransactions[0]);
+//    }
 }

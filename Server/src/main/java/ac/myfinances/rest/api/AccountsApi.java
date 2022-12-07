@@ -8,14 +8,15 @@ package ac.myfinances.rest.api;
 import ac.myfinances.rest.model.Account;
 import java.util.List;
 import io.swagger.annotations.*;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
+import reactor.core.publisher.Flux;
 
-import javax.validation.Valid;
 import java.util.Optional;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-11-10T22:47:30.445-05:00[America/New_York]")
 
@@ -122,7 +123,7 @@ public interface AccountsApi {
         value = "/accounts",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Account>> getAllAccounts() {
+    default Flux<Account> getAllAccounts() {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -132,7 +133,7 @@ public interface AccountsApi {
                 }
             }
         });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return null;
 
     }
 

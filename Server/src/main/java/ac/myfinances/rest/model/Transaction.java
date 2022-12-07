@@ -3,14 +3,14 @@ package ac.myfinances.rest.model;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
-import javax.validation.Valid;
 
 
+import jakarta.validation.Valid;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 

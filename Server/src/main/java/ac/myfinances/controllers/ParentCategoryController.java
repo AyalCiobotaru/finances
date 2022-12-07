@@ -15,10 +15,10 @@ public class ParentCategoryController implements ParentCategoryApi {
     @Autowired
     private ParentCategoryRepository parentCategoryRepo;
 
-    @Override
-    public ResponseEntity<List<ParentCategory>> getAllParentCategories() {
-        return ResponseEntity.ok(this.parentCategoryRepo.findAll());
-    }
+//    @Override
+//    public ResponseEntity<List<ParentCategory>> getAllParentCategories() {
+//        return ResponseEntity.ok(this.parentCategoryRepo.findAll());
+//    }
 
     @Override
     public ResponseEntity<Void> createParentCategory(String body) {
