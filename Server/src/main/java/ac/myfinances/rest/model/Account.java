@@ -16,8 +16,12 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-11-10T22:47:30.445-05:00[America/New_York]")
 @Entity
+@Table(name = "Account")
+@NamedQueries({
+        @NamedQuery(name = "Account.findAll", query = "select a from Account a")
+})
 
-public class Account  implements Serializable {
+public class Account implements Serializable {
   private static final long serialVersionUID = 1L;
 
 
