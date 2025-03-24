@@ -51,5 +51,3 @@ This is the minimum viable product, it includes the following features:
 1. Account CRUD
 1. Automaticly pull from bank accounts
 1. Graphs, all the graphs
-
-

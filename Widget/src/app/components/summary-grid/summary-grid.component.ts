@@ -7,6 +7,7 @@ import { TransactionDTO } from 'src/app/rest';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { MessagingService } from 'src/app/services/messaging.service';
 import { SummaryDataService } from 'src/app/services/summary-data.service';
+import { VisibilityHeaderComponent } from '../visibility-header/visibility-header.component';
 import { CheckmarkHeaderComponent } from './checkmark-header/checkmark-header.component';
 
 @Component({
@@ -152,6 +153,20 @@ export class SummaryGridComponent implements OnInit {
         }
       }
     ];
+    colDefs.push(
+      {
+        headerName: 'Total',
+        headerComponent: CheckmarkHeaderComponent,
+        field: 'total',
+        valueFormatter: (params) => {
+          if (params.value < 0) {
+            return `$  (` + this.dataService.numberWithCommas(params.value) + ')'
+          } else {
+            return '$  ' + this.dataService.numberWithCommas(params.value)
+          }
+        }
+      }
+    );
   
     // Create a column for each month
     for (let month = 0; month < this.months.length; month++) {
@@ -169,25 +184,13 @@ export class SummaryGridComponent implements OnInit {
             } else {
               return "";
             }
-          })
+          }),
+          headerComponent: VisibilityHeaderComponent
         }
       )
     }
       
-    colDefs.push(
-      {
-        headerName: 'Total',
-        headerComponent: CheckmarkHeaderComponent,
-        field: 'total',
-        valueFormatter: (params) => {
-          if (params.value < 0) {
-            return `$  (` + this.dataService.numberWithCommas(params.value) + ')'
-          } else {
-            return '$  ' + this.dataService.numberWithCommas(params.value)
-          }
-        }
-      }
-    );
+    
 
     this.columnDefs = colDefs;
   }

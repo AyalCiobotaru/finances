@@ -1,5 +1,7 @@
-INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "CACI", (SELECT id from myServer.parent_category pc where pc.name = "Career"), "Income", 0.0);
-INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "CACI Contr.", (SELECT id from myServer.parent_category pc where pc.name = "Career"), "Income", 0.0);
+INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "MITRE", (SELECT id from myServer.parent_category pc where pc.name = "Career"), "Income", 0.0);
+INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "MITRE Contr.", (SELECT id from myServer.parent_category pc where pc.name = "Career"), "Income", 0.0);
+INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "Ncyber", (SELECT id from myServer.parent_category pc where pc.name = "Career"), "Income", 0.0);
+INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "Ncyber Contr.", (SELECT id from myServer.parent_category pc where pc.name = "Career"), "Income", 0.0);
 INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "Various Income", (SELECT id from myServer.parent_category pc where pc.name = "Misc."), "Income", 0.0);
 INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "Volleyball Winnings", (SELECT id from myServer.parent_category pc where pc.name = "Misc."), "Income", 0.0);
 INSERT INTO myServer.account (id, name, parent_id, type, balance) VALUES (uuid(),  "Savings Interest", (SELECT id from myServer.parent_category pc where pc.name = "Interest"), "Income", 0.0);
