@@ -49,5 +49,6 @@ This is the minimum viable product, it includes the following features:
 ## Features Planned
 
 1. Account CRUD
-1. Automaticly pull from bank accounts
+1. <s>Automaticly pull from bank accounts</s>
+1. Show Column button
 1. Graphs, all the graphs
