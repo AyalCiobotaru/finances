@@ -10,6 +10,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.IOException;
 import java.util.Map;
@@ -37,46 +40,41 @@ public class MyFinancesServer implements CommandLineRunner{
         }
 
     }
-//
-//    /**
-//     * Create a method for the cors Configurer.
-//     */
-//    @Bean
-//    @ConditionalOnProperty(name = "ac.cors.enabled")
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Value("${ac.cors.api.allowed-origins}")
-//            private String apiAllowedOrigins;
-//
-//            @Value("${ac.cors.api.allowed-headers}")
-//            private String apiAllowedHeaders;
-//
-//            @Value("${ac.cors.api.allowed-methods}")
-//            private String apiAllowedMethods;
-//
-//            @Value("${ac.cors.api.allow-credentials}")
-//            private Boolean apiAllowCredentials;
-//
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("/**")
-//                        .allowedOrigins(this.apiAllowedOrigins.split(","))
-//                        .allowCredentials(this.apiAllowCredentials)
-//                        .allowedMethods(this.apiAllowedMethods.split(","))
-//                        .allowedHeaders(this.apiAllowedHeaders.split(","));
-//            }
-//
-//            @Override
-//            public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//                registry.addResourceHandler("/static/**")
-//                        .addResourceLocations("/static/");
-//            }
-//        };
-//    }
-//
-//    @Bean
-//    public Module jsonNullableModule() {
-//        return new JsonNullableModule();
-//    }
+
+    /**
+     * Create a method for the cors Configurer.
+     */
+    @Bean
+    @ConditionalOnProperty(name = "ac.cors.enabled")
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Value("${ac.cors.api.allowed-origins}")
+            private String apiAllowedOrigins;
+
+            @Value("${ac.cors.api.allowed-headers}")
+            private String apiAllowedHeaders;
+
+            @Value("${ac.cors.api.allowed-methods}")
+            private String apiAllowedMethods;
+
+            @Value("${ac.cors.api.allow-credentials}")
+            private Boolean apiAllowCredentials;
+
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(this.apiAllowedOrigins.split(","))
+                        .allowCredentials(this.apiAllowCredentials)
+                        .allowedMethods(this.apiAllowedMethods.split(","))
+                        .allowedHeaders(this.apiAllowedHeaders.split(","));
+            }
+
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/static/**")
+                        .addResourceLocations("/static/");
+            }
+        };
+    }
+
 
 }
