@@ -50,21 +50,28 @@ export class TransactionFormComponent implements OnInit {
   onSubmit(): void {
     if (this.isValid()) {
       let transaction : TransactionDTO = this.transactionForm.value;
-      
-      // Create proper JavaOffset Datetime objects to use from the FormGroup.
-      transaction.date = (new Date(this.transactionForm.value.date).toISOString());
-
+  
+      // Parse the date string manually to avoid the UTC offset bug
+      const inputDate: string = this.transactionForm.value.date; // "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm"
+      const [datePart, timePart = '00:00'] = inputDate.split('T')
+      const [year, month, day] = datePart.split('-').map(Number)
+      const [hours, minutes] = timePart.split(':').map(Number)
+  
+      // Create local date object
+      const localDate = new Date(year, month - 1, day, hours, minutes)
+      transaction.date = localDate.toISOString()
+  
       // Create the id column for the dto
-      transaction.creditAccountId = this.transactionForm.value.creditAccount.id;
+      transaction.creditAccountId = this.transactionForm.value.creditAccount.id
       transaction.debitAccountId = this.transactionForm.value.debitAccount.id
-
+  
       let array : TransactionDTO[] = []
       array.push(transaction)
       this.dataService.addTransactions(array).then(() => {
         this.messagingService.transactionsChanged();
       }, (error: any) => {
         console.log("Failed in updating or creating a transaction")
-        console.log(error);
+        console.log(error)
       })
     }
   }
